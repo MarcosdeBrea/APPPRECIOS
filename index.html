@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Lienzo App - Versión HTML/JS</title>
+  <title>Tabla Precios Web</title>
   <style>
     /* Reset básico */
     * {
@@ -107,7 +107,7 @@
     }
     /* Encabezado de impresión: se oculta en la vista normal y se muestra solo al imprimir */
     #printHeader {
-      display: none; /* Oculto en la aplicación */
+      display: none;
       margin-bottom: 2rem;
     }
     .header-row {
@@ -143,20 +143,16 @@
       .brand {
         font-size: 24px !important;
       }
-      /* Tamaño general de la tabla: 9px */
       table, tbody, td {
         font-size: 9px !important;
       }
-      /* Cabecera de la tabla: 8px */
       table thead th {
         font-size: 8px !important;
       }
-      /* Celdas de Descripción y Medidas (primeras dos columnas) más pequeñas: 8px */
       table tbody td:nth-child(1),
       table tbody td:nth-child(2) {
         font-size: 8px !important;
       }
-      /* Aseguramos que el botón de cierre también se muestre sin estilo azul */
       .close-btn {
         background-color: transparent !important;
         border: none !important;
@@ -165,7 +161,6 @@
         margin: 0 !important;
       }
     }
-    /* Responsivo */
     @media (max-width: 768px) {
       .flex {
         flex-direction: column;
@@ -180,32 +175,32 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- Encabezado que solo se verá al imprimir -->
-    <div id="printHeader">
-      <div class="header-row">
-        <div class="brand">Gabarró</div>
-        <div class="contact">
-          <p style="margin:0;">
-            <strong>Marcos Sanchez</strong><br>
-            Tel. 669 22 80 10<br>
-            Email Consultas: marcos.sanchez@gabarro.com<br>
-            Email Pedidos: ventas.galicia@gabarro.com
-          </p>
-        </div>
-      </div>
-      <div style="margin-top:1rem;">
-        <p>
-          <strong>Precio picking:</strong> se aplica para pedidos superiores a 250 € brutos.<br>
-          <strong>Portes:</strong> 30 € para pedidos con un importe inferior a 400 € netos.<br>
-          <strong>Aviso:</strong> Esta tarifa puede estar sujeta a variaciones; verifiquen el precio antes de realizar el pedido.
+  <!-- Encabezado para impresión -->
+  <div id="printHeader">
+    <div class="header-row">
+      <div class="brand">Gabarró</div>
+      <div class="contact">
+        <p style="margin:0;">
+          <strong>Marcos Sanchez</strong><br>
+          Tel. 669 22 80 10<br>
+          Email Consultas: marcos.sanchez@gabarro.com<br>
+          Email Pedidos: ventas.galicia@gabarro.com
         </p>
       </div>
-      <hr>
     </div>
+    <div style="margin-top:1rem;">
+      <p>
+        <strong>Precio picking:</strong> se aplica para pedidos superiores a 180 € Netos.<br>
+        <strong>Portes:</strong> 30 € para pedidos con un importe inferior a 400 € netos.
+      </p>
+    </div>
+    <hr>
+  </div>
+
+  <div class="container">
     <!-- Sección de controles (NO se imprimirá) -->
     <div class="card no-print">
-      <h1>Lienzo - Hoja de datos</h1>
+      <h1>Tabla Precios Web</h1>
       <div style="text-align:right; margin-bottom:1rem;">
         <button id="btnPrint">Imprimir PDF</button>
       </div>
@@ -224,17 +219,26 @@
         </label>
       </div>
       <div class="form-section">
-        <label for="inputData">Pega aquí los datos (formato: **código**largo ancho grosor descripción - outlet precio udMedida):</label>
+        <label for="inputData">Pega aquí los datos:</label>
         <textarea id="inputData"></textarea>
       </div>
       <div class="flex" style="justify-content:center; margin-top:0.5rem;">
         <button id="btnAddTable">Agregar Tabla</button>
         <button id="btnClearText">Borrar Texto</button>
       </div>
+      <!-- Casilla dedicada para Unidad (m²) -->
+      <div class="flex justify-center items-center" style="margin-top:0.5rem;">
+        <label>
+          <input type="checkbox" id="chkUnidad" checked>
+          Unidad (m²)
+        </label>
+      </div>
+      <!-- Se eliminó el recuadro de checkboxes dinámicos para la unidad -->
       <div id="columnsContainer" class="flex flex-wrap justify-center items-center" style="margin-top:1rem;">
-        <!-- Se generarán los checkboxes dinámicamente -->
+        <!-- Se generarán los checkboxes dinámicamente (menos "unidadMedida") -->
       </div>
     </div>
+
     <!-- Contenedor de tablas (se imprimirá) -->
     <div id="tablesContainer" class="card">
       <h2>Tablas de Precios Netos</h2>
@@ -244,52 +248,29 @@
 
   <script>
     /********** CONFIGURACIÓN DE COLUMNAS **********/
+    // Se eliminó la propiedad "unidadMedida" de los checkboxes dinámicos para evitar duplicidad
     let columns = {
       codigo: true,
       medidas: true,
       precioBase: true,
-      pedidoPicking: true,     // Pedido +250€ brutos
-      pedidoPaquete: true,     // Paquete Normal
-      pedidoPaquete38: true,   // Paquete 38%
-      unidadMedida: true,
+      pedidoPicking: true,
+      pedidoPaquete: true,
       isOutlet: true
     };
-    
+
     const columnLabelsDefault = {
       codigo: "Código",
       medidas: "Medidas",
       precioBase: "Precio Base",
-      pedidoPicking: "Pedido +250€",
-      pedidoPaquete: "Pedido Paquete",
-      pedidoPaquete38: "Pedido Paquete 38%",
-      unidadMedida: "Unidad",
+      pedidoPicking: "Precio Picking",
+      pedidoPaquete: "Precio Paquete",
       isOutlet: "Outlet"
     };
-    
+
     function getColumnLabel(key) {
-      if(key === "pedidoPicking") {
-        switch(discountConfig) {
-          case "A": return "Pedido +250€ (-31%)";
-          case "B": return "Pedido +250€ (-28%)";
-          case "M": return "Pedido +250€ (-34%)";
-          default: return "Pedido +250€";
-        }
-      }
-      
-      if(key === "pedidoPaquete") {
-        switch(discountConfig) {
-          case "A": return "Pedido Paquete (-36%)";
-          case "B": return "Pedido Paquete (-33%)";
-          case "M": return "Pedido Paquete (-37%)";
-          default: return "Pedido Paquete";
-        }
-      }
-      
-      if(key === "pedidoPaquete38") {
-        if(discountConfig === "B") return "Pedido Paquete";
-        return "Pedido Paquete (-38%)";
-      }
-      
+      // Se retornan etiquetas fijas para los descuentos, sin porcentajes
+      if(key === "pedidoPicking") return "Precio Picking";
+      if(key === "pedidoPaquete") return "Precio Paquete";
       return columnLabelsDefault[key] || key;
     }
 
@@ -304,6 +285,7 @@
     const btnPrint = document.getElementById("btnPrint");
     const columnsContainer = document.getElementById("columnsContainer");
     const tablesContainer = document.getElementById("tablesContainer");
+    const chkUnidad = document.getElementById("chkUnidad");
 
     document.addEventListener("DOMContentLoaded", () => {
       document.querySelectorAll('input[name="discountConfig"]').forEach(radio => {
@@ -312,6 +294,10 @@
           renderColumnsCheckboxes();
           renderTables();
         });
+      });
+      
+      chkUnidad.addEventListener("change", () => {
+        renderTables();
       });
       
       btnAddTable.addEventListener("click", () => {
@@ -337,10 +323,8 @@
     function renderColumnsCheckboxes() {
       columnsContainer.innerHTML = "";
       for(let colKey in columns) {
-        // No mostrar la columna de paquete 38% para cliente B
-        if(colKey === "pedidoPaquete38" && discountConfig === "B") {
-          continue;
-        }
+        // Se salta la propiedad que controla la unidad para evitar duplicados
+        if(colKey === "unidadMedida") continue;
         
         const label = document.createElement("label");
         label.textContent = getColumnLabel(colKey);
@@ -356,98 +340,91 @@
       }
     }
 
-    /********** PARSEO DE DATOS **********/
+    /********** PARSEO DE DATOS (NUEVO FORMATO) **********/
     function parseData() {
-      const input = inputDataElem.value || "";
-      if(!input.trim()) return [];
+      const input = inputDataElem.value.trim();
+      if (!input) return [];
       
+      // Cada línea es un registro con campos separados por tabulaciones
+      const lines = input.split("\n").map(line => line.trim()).filter(line => line !== "");
       let rows = [];
-      // Divide el input en filas separando por saltos de línea
-      const lines = input.split("\n");
       
       lines.forEach(line => {
-        const trimmed = line.trim();
-        if(!trimmed) return;
+        const fields = line.split("\t");
+        // Mapeo:
+        // fields[0] => Código
+        // fields[1] => Descripción (contiene medidas al final que se quitarán)
+        // fields[2] => Largo
+        // fields[3] => Ancho
+        // fields[4] => Grosor (con punto decimal; si es .00 se muestra sin decimales)
+        // fields[5] => "Outlet" (si existe)
+        // fields[8] => Precio (ej. "12,99 €")
         
-        try {
-          // Extraer el código entre asteriscos
-          const codeMatch = trimmed.match(/\*\*([^*]+)\*\*/);
-          if (!codeMatch) return;
-          
-          const codigo = codeMatch[1];
-          // Eliminar el código con asteriscos para procesar el resto
-          const remainingData = trimmed.replace(/\*\*[^*]+\*\*/, "").trim();
-          
-          // Extraer los datos numéricos hasta encontrar la primera letra
-          const dataMatch = remainingData.match(/^(\d+)(\d+)(\d+\.\d+)(.*?)([^\w]Outlet|[^\w])(\d+,\d+\s*€)(.*)$/);
-          if (!dataMatch) return;
-          
-          const largo = parseNumber(dataMatch[1]);
-          const ancho = parseNumber(dataMatch[2]);
-          const grosor = parseNumber(dataMatch[3]);
-          const descripcion = dataMatch[4].trim();
-          const isOutlet = dataMatch[5].includes("Outlet");
-          const precio = parseNumber(dataMatch[6].replace("€", ""));
-          const unidadMedida = dataMatch[7].trim();
-          
-          // Calcular las medidas formateadas
-          const medidas = `${largo}x${ancho}x${grosor}`;
-          
-          // Calcular los precios con descuentos
-          const discounts = calculateDiscounts(precio);
-          
-          // Crear el objeto de fila
-          const row = {
-            codigo,
-            descripcion,
-            medidas,
-            grosor,
-            precioBase: formatPrice(precio),
-            pedidoPicking: discounts.pedidoPicking,
-            pedidoPaquete: discounts.pedidoPaquete,
-            pedidoPaquete38: discounts.pedidoPaquete38,
-            unidadMedida,
-            isOutlet: isOutlet ? "Sí" : "No"
-          };
-          
-          rows.push(row);
-        } catch (e) {
-          console.error("Error parsing line:", line, e);
-        }
+        let codigo = fields[0] || "";
+        
+        // Quitar las medidas al final de la descripción (últimos números separados por espacios)
+        let descripcionOriginal = fields[1] || "";
+        let descripcion = descripcionOriginal.replace(/\s+\d+\s+\d+\s+\d+(?:\.\d+)?\s*$/, "").trim();
+        
+        let largo = parseNumber(fields[2]);
+        let ancho = parseNumber(fields[3]);
+        let grosor = parseNumber(fields[4]);
+        // Formatear el grosor: si es entero (ej. 10.00) se muestra como "10"
+        let formattedGrosor = (grosor % 1 === 0) ? grosor.toString() : grosor.toFixed(2).replace(".", ",");
+        
+        let isOutlet = fields[5] && fields[5].toLowerCase().includes("outlet");
+        
+        // Extraer el precio (precio por m²) del campo 9 (índice 8)
+        const precioStr = fields[8] || "0";
+        let precioMatch = precioStr.match(/([\d.,]+)/);
+        let priceM2 = precioMatch ? parseNumber(precioMatch[1]) : 0;
+        
+        // Armar la cadena de medidas usando el grosor formateado
+        let medidas = `${largo}x${ancho}x${formattedGrosor}`;
+        
+        // Guardar datos para recalcular precios según la unidad (largo y ancho están en mm)
+        let row = {
+          codigo,
+          descripcion,
+          largo,
+          ancho,
+          grosor,
+          priceM2,
+          medidas,
+          isOutlet: isOutlet ? "Sí" : "No"
+        };
+        
+        rows.push(row);
       });
       
-      // Ordenar por grosor ascendente
+      // Ordenar por grosor ascendente (opcional)
       rows.sort((a, b) => a.grosor - b.grosor);
-      
       return rows;
     }
 
     /********** CÁLCULO DE DESCUENTOS **********/
+    // Se recibe el precio base (por m² o por tablero) y se aplican los descuentos
     function calculateDiscounts(precioBase) {
-      let pedidoPicking, pedidoPaquete, pedidoPaquete38;
+      let precioPicking, precioPaquete;
       
       switch(discountConfig) {
         case "B":
-          pedidoPicking = (precioBase * (1 - 0.28)).toFixed(2) + " €";
-          pedidoPaquete = (precioBase * (1 - 0.33)).toFixed(2) + " €";
-          pedidoPaquete38 = pedidoPaquete; // Cliente B no tiene descuento especial del 38%
+          precioPicking = (precioBase * (1 - 0.28)).toFixed(2) + " €";
+          precioPaquete = (precioBase * (1 - 0.33)).toFixed(2) + " €";
           break;
         case "M":
-          pedidoPicking = (precioBase * (1 - 0.34)).toFixed(2) + " €";
-          pedidoPaquete = (precioBase * (1 - 0.37)).toFixed(2) + " €";
-          pedidoPaquete38 = (precioBase * (1 - 0.38)).toFixed(2) + " €";
+          precioPicking = (precioBase * (1 - 0.34)).toFixed(2) + " €";
+          precioPaquete = (precioBase * (1 - 0.37)).toFixed(2) + " €";
           break;
         default: // Cliente A
-          pedidoPicking = (precioBase * (1 - 0.31)).toFixed(2) + " €";
-          pedidoPaquete = (precioBase * (1 - 0.36)).toFixed(2) + " €";
-          pedidoPaquete38 = (precioBase * (1 - 0.38)).toFixed(2) + " €";
+          precioPicking = (precioBase * (1 - 0.31)).toFixed(2) + " €";
+          precioPaquete = (precioBase * (1 - 0.36)).toFixed(2) + " €";
           break;
       }
       
       return {
-        pedidoPicking,
-        pedidoPaquete,
-        pedidoPaquete38
+        pedidoPicking: precioPicking,
+        pedidoPaquete: precioPaquete
       };
     }
 
@@ -477,87 +454,62 @@
       });
     }
 
+    // Genera la tabla recalculando precios según si la casilla "Unidad" (m²) está marcada o no.
     function generateTableHTML(rows) {
       let theadHTML = "<thead><tr>";
       
       if(columns.codigo) {
         theadHTML += "<th>" + getColumnLabel("codigo") + "</th>";
       }
-      
       theadHTML += "<th>Descripción</th>";
-      
       if(columns.medidas) {
         theadHTML += "<th>" + getColumnLabel("medidas") + "</th>";
       }
-      
       if(columns.precioBase) {
         theadHTML += "<th>" + getColumnLabel("precioBase") + "</th>";
       }
-      
       if(columns.pedidoPicking) {
         theadHTML += "<th>" + getColumnLabel("pedidoPicking") + "</th>";
       }
-      
       if(columns.pedidoPaquete) {
         theadHTML += "<th>" + getColumnLabel("pedidoPaquete") + "</th>";
       }
-      
-      if(columns.pedidoPaquete38 && discountConfig !== "B") {
-        theadHTML += "<th>" + getColumnLabel("pedidoPaquete38") + "</th>";
-      }
-      
-      if(columns.unidadMedida) {
-        theadHTML += "<th>" + getColumnLabel("unidadMedida") + "</th>";
-      }
-      
       if(columns.isOutlet) {
         theadHTML += "<th>" + getColumnLabel("isOutlet") + "</th>";
       }
-      
       theadHTML += "</tr></thead>";
       
       let tbodyHTML = "<tbody>";
-      
       rows.forEach(row => {
-        tbodyHTML += "<tr>";
+        // Calcular el precio base según la casilla "Unidad":
+        // Si está marcada se usa el precio por m²; de lo contrario, se calcula el precio del tablero.
+        // Nota: Largo y ancho están en mm, por lo que se convierten a m² dividiendo su producto por 1,000,000.
+        let basePrice = chkUnidad.checked ? row.priceM2 : ((row.largo * row.ancho) / 1000000) * row.priceM2;
+        let discounts = calculateDiscounts(basePrice);
+        let precioBaseFormatted = formatPrice(basePrice);
         
+        tbodyHTML += "<tr>";
         if(columns.codigo) {
           tbodyHTML += `<td>${row.codigo}</td>`;
         }
-        
         tbodyHTML += `<td>${row.descripcion}</td>`;
-        
         if(columns.medidas) {
           tbodyHTML += `<td>${row.medidas}</td>`;
         }
-        
         if(columns.precioBase) {
-          tbodyHTML += `<td>${row.precioBase}</td>`;
+          tbodyHTML += `<td>${precioBaseFormatted}</td>`;
         }
-        
         if(columns.pedidoPicking) {
-          tbodyHTML += `<td>${row.pedidoPicking}</td>`;
+          tbodyHTML += `<td>${discounts.pedidoPicking}</td>`;
         }
-        
         if(columns.pedidoPaquete) {
-          tbodyHTML += `<td>${row.pedidoPaquete}</td>`;
+          tbodyHTML += `<td>${discounts.pedidoPaquete}</td>`;
         }
-        
-        if(columns.pedidoPaquete38 && discountConfig !== "B") {
-          tbodyHTML += `<td>${row.pedidoPaquete38}</td>`;
-        }
-        
-        if(columns.unidadMedida) {
-          tbodyHTML += `<td>${row.unidadMedida}</td>`;
-        }
-        
         if(columns.isOutlet) {
           tbodyHTML += `<td>${row.isOutlet}</td>`;
         }
-        
         tbodyHTML += "</tr>";
       });
-      
       tbodyHTML += "</tbody>";
       
       return theadHTML + tbodyHTML;
