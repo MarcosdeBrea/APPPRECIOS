@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lienzo App - Versión HTML/JS</title>
+  <style>
+    /* Reset básico */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+      padding: 1rem;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .card {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 0.5rem;
+      padding: 1rem;
+    }
+    .flex {
+      display: flex;
+      gap: 1rem;
+    }
+    .flex-wrap {
+      flex-wrap: wrap;
+    }
+    .justify-center {
+      justify-content: center;
+    }
+    .items-center {
+      align-items: center;
+    }
+    .form-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    textarea {
+      width: 100%;
+      min-height: 5rem;
+      border: 1px solid #ccc;
+      border-radius: 0.25rem;
+      padding: 0.5rem;
+      resize: vertical;
+    }
+    input[type="radio"],
+    input[type="checkbox"] {
+      margin: 0;
+      transform: translateY(1px);
+    }
+    label {
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      margin-right: 1rem;
+      margin-bottom: 0.25rem;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 0.25rem;
+      background-color: #0077ff;
+      color: #fff;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #005dc1;
+    }
+    /* Botón de cerrar sin color azul */
+    .close-btn {
+      background-color: transparent;
+      border: none;
+      color: black;
+      padding: 0;
+      margin: 0;
+      cursor: pointer;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    thead {
+      background-color: #f0f0f0;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 0.5rem;
+      text-align: center;
+    }
+    tr:hover {
+      background-color: #f9f9f9;
+    }
+    /* Encabezado de impresión: se oculta en la vista normal y se muestra solo al imprimir */
+    #printHeader {
+      display: none; /* Oculto en la aplicación */
+      margin-bottom: 2rem;
+    }
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .brand {
+      background-color: #000;
+      color: #fff;
+      font-size: 37px;
+      padding: 10px 20px;
+    }
+    .contact {
+      text-align: right;
+      padding: 10px;
+    }
+    /* Ocultar la tarjeta de controles en la impresión */
+    .no-print {
+      display: block;
+    }
+    /************ REGLAS PARA IMPRESIÓN ************/
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+      #printHeader {
+        display: block !important;
+      }
+      body {
+        font-size: 12px !important;
+      }
+      .brand {
+        font-size: 24px !important;
+      }
+      /* Tamaño general de la tabla: 9px */
+      table, tbody, td {
+        font-size: 9px !important;
+      }
+      /* Cabecera de la tabla: 8px */
+      table thead th {
+        font-size: 8px !important;
+      }
+      /* Celdas de Descripción y Medidas (primeras dos columnas) más pequeñas: 8px */
+      table tbody td:nth-child(1),
+      table tbody td:nth-child(2) {
+        font-size: 8px !important;
+      }
+      /* Aseguramos que el botón de cierre también se muestre sin estilo azul */
+      .close-btn {
+        background-color: transparent !important;
+        border: none !important;
+        color: black !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+    }
+    /* Responsivo */
+    @media (max-width: 768px) {
+      .flex {
+        flex-direction: column;
+      }
+      table, thead, tbody, th, td, tr {
+        font-size: 0.8rem;
+      }
+      label {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Encabezado que solo se verá al imprimir -->
+    <div id="printHeader">
+      <div class="header-row">
+        <div class="brand">Gabarró</div>
+        <div class="contact">
+          <p style="margin:0;">
+            <strong>Marcos Sanchez</strong><br>
+            Tel. 669 22 80 10<br>
+            Email Consultas: marcos.sanchez@gabarro.com<br>
+            Email Pedidos: ventas.galicia@gabarro.com
+          </p>
+        </div>
+      </div>
+      <div style="margin-top:1rem;">
+        <p>
+          <strong>Precio picking:</strong> se aplica para pedidos superiores a 250 € brutos.<br>
+          <strong>Portes:</strong> 30 € para pedidos con un importe inferior a 400 € netos.<br>
+          <strong>Aviso:</strong> Esta tarifa puede estar sujeta a variaciones; verifiquen el precio antes de realizar el pedido.
+        </p>
+      </div>
+      <hr>
+    </div>
+    <!-- Sección de controles (NO se imprimirá) -->
+    <div class="card no-print">
+      <h1>Lienzo - Hoja de datos</h1>
+      <div style="text-align:right; margin-bottom:1rem;">
+        <button id="btnPrint">Imprimir PDF</button>
+      </div>
+      <div class="flex justify-center items-center" style="margin-bottom:0.5rem;">
+        <label>
+          <input type="radio" name="discountConfig" value="A" checked>
+          Cliente A
+        </label>
+        <label>
+          <input type="radio" name="discountConfig" value="B">
+          Cliente B
+        </label>
+        <label>
+          <input type="radio" name="discountConfig" value="M">
+          Cliente M
+        </label>
+      </div>
+      <div class="form-section">
+        <label for="inputData">Pega aquí los datos (formato: **código**largo ancho grosor descripción - outlet precio udMedida):</label>
+        <textarea id="inputData"></textarea>
+      </div>
+      <div class="flex" style="justify-content:center; margin-top:0.5rem;">
+        <button id="btnAddTable">Agregar Tabla</button>
+        <button id="btnClearText">Borrar Texto</button>
+      </div>
+      <div id="columnsContainer" class="flex flex-wrap justify-center items-center" style="margin-top:1rem;">
+        <!-- Se generarán los checkboxes dinámicamente -->
+      </div>
+    </div>
+    <!-- Contenedor de tablas (se imprimirá) -->
+    <div id="tablesContainer" class="card">
+      <h2>Tablas de Precios Netos</h2>
+      <!-- Aquí se insertarán las tablas generadas -->
+    </div>
+  </div>
+
+  <script>
+    /********** CONFIGURACIÓN DE COLUMNAS **********/
+    let columns = {
+      codigo: true,
+      medidas: true,
+      precioBase: true,
+      pedidoPicking: true,     // Pedido +250€ brutos
+      pedidoPaquete: true,     // Paquete Normal
+      pedidoPaquete38: true,   // Paquete 38%
+      unidadMedida: true,
+      isOutlet: true
+    };
+    
+    const columnLabelsDefault = {
+      codigo: "Código",
+      medidas: "Medidas",
+      precioBase: "Precio Base",
+      pedidoPicking: "Pedido +250€",
+      pedidoPaquete: "Pedido Paquete",
+      pedidoPaquete38: "Pedido Paquete 38%",
+      unidadMedida: "Unidad",
+      isOutlet: "Outlet"
+    };
+    
+    function getColumnLabel(key) {
+      if(key === "pedidoPicking") {
+        switch(discountConfig) {
+          case "A": return "Pedido +250€ (-31%)";
+          case "B": return "Pedido +250€ (-28%)";
+          case "M": return "Pedido +250€ (-34%)";
+          default: return "Pedido +250€";
+        }
+      }
+      
+      if(key === "pedidoPaquete") {
+        switch(discountConfig) {
+          case "A": return "Pedido Paquete (-36%)";
+          case "B": return "Pedido Paquete (-33%)";
+          case "M": return "Pedido Paquete (-37%)";
+          default: return "Pedido Paquete";
+        }
+      }
+      
+      if(key === "pedidoPaquete38") {
+        if(discountConfig === "B") return "Pedido Paquete";
+        return "Pedido Paquete (-38%)";
+      }
+      
+      return columnLabelsDefault[key] || key;
+    }
+
+    /********** VARIABLES GLOBALES **********/
+    let discountConfig = "A";  // "A", "B" o "M"
+    let tablesData = [];
+
+    // Referencias al DOM
+    const inputDataElem = document.getElementById("inputData");
+    const btnAddTable = document.getElementById("btnAddTable");
+    const btnClearText = document.getElementById("btnClearText");
+    const btnPrint = document.getElementById("btnPrint");
+    const columnsContainer = document.getElementById("columnsContainer");
+    const tablesContainer = document.getElementById("tablesContainer");
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('input[name="discountConfig"]').forEach(radio => {
+        radio.addEventListener("change", (e) => {
+          discountConfig = e.target.value;
+          renderColumnsCheckboxes();
+          renderTables();
+        });
+      });
+      
+      btnAddTable.addEventListener("click", () => {
+        const newRows = parseData();
+        if(newRows.length > 0) {
+          tablesData.push(newRows);
+          renderTables();
+        }
+      });
+      
+      btnClearText.addEventListener("click", () => {
+        inputDataElem.value = "";
+      });
+      
+      btnPrint.addEventListener("click", () => {
+        window.print();
+      });
+      
+      renderColumnsCheckboxes();
+    });
+
+    /********** RENDERIZADO DE CHECKBOXES **********/
+    function renderColumnsCheckboxes() {
+      columnsContainer.innerHTML = "";
+      for(let colKey in columns) {
+        // No mostrar la columna de paquete 38% para cliente B
+        if(colKey === "pedidoPaquete38" && discountConfig === "B") {
+          continue;
+        }
+        
+        const label = document.createElement("label");
+        label.textContent = getColumnLabel(colKey);
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = columns[colKey];
+        checkbox.addEventListener("change", () => {
+          columns[colKey] = checkbox.checked;
+          renderTables();
+        });
+        label.prepend(checkbox);
+        columnsContainer.appendChild(label);
+      }
+    }
+
+    /********** PARSEO DE DATOS **********/
+    function parseData() {
+      const input = inputDataElem.value || "";
+      if(!input.trim()) return [];
+      
+      let rows = [];
+      // Divide el input en filas separando por saltos de línea
+      const lines = input.split("\n");
+      
+      lines.forEach(line => {
+        const trimmed = line.trim();
+        if(!trimmed) return;
+        
+        try {
+          // Extraer el código entre asteriscos
+          const codeMatch = trimmed.match(/\*\*([^*]+)\*\*/);
+          if (!codeMatch) return;
+          
+          const codigo = codeMatch[1];
+          // Eliminar el código con asteriscos para procesar el resto
+          const remainingData = trimmed.replace(/\*\*[^*]+\*\*/, "").trim();
+          
+          // Extraer los datos numéricos hasta encontrar la primera letra
+          const dataMatch = remainingData.match(/^(\d+)(\d+)(\d+\.\d+)(.*?)([^\w]Outlet|[^\w])(\d+,\d+\s*€)(.*)$/);
+          if (!dataMatch) return;
+          
+          const largo = parseNumber(dataMatch[1]);
+          const ancho = parseNumber(dataMatch[2]);
+          const grosor = parseNumber(dataMatch[3]);
+          const descripcion = dataMatch[4].trim();
+          const isOutlet = dataMatch[5].includes("Outlet");
+          const precio = parseNumber(dataMatch[6].replace("€", ""));
+          const unidadMedida = dataMatch[7].trim();
+          
+          // Calcular las medidas formateadas
+          const medidas = `${largo}x${ancho}x${grosor}`;
+          
+          // Calcular los precios con descuentos
+          const discounts = calculateDiscounts(precio);
+          
+          // Crear el objeto de fila
+          const row = {
+            codigo,
+            descripcion,
+            medidas,
+            grosor,
+            precioBase: formatPrice(precio),
+            pedidoPicking: discounts.pedidoPicking,
+            pedidoPaquete: discounts.pedidoPaquete,
+            pedidoPaquete38: discounts.pedidoPaquete38,
+            unidadMedida,
+            isOutlet: isOutlet ? "Sí" : "No"
+          };
+          
+          rows.push(row);
+        } catch (e) {
+          console.error("Error parsing line:", line, e);
+        }
+      });
+      
+      // Ordenar por grosor ascendente
+      rows.sort((a, b) => a.grosor - b.grosor);
+      
+      return rows;
+    }
+
+    /********** CÁLCULO DE DESCUENTOS **********/
+    function calculateDiscounts(precioBase) {
+      let pedidoPicking, pedidoPaquete, pedidoPaquete38;
+      
+      switch(discountConfig) {
+        case "B":
+          pedidoPicking = (precioBase * (1 - 0.28)).toFixed(2) + " €";
+          pedidoPaquete = (precioBase * (1 - 0.33)).toFixed(2) + " €";
+          pedidoPaquete38 = pedidoPaquete; // Cliente B no tiene descuento especial del 38%
+          break;
+        case "M":
+          pedidoPicking = (precioBase * (1 - 0.34)).toFixed(2) + " €";
+          pedidoPaquete = (precioBase * (1 - 0.37)).toFixed(2) + " €";
+          pedidoPaquete38 = (precioBase * (1 - 0.38)).toFixed(2) + " €";
+          break;
+        default: // Cliente A
+          pedidoPicking = (precioBase * (1 - 0.31)).toFixed(2) + " €";
+          pedidoPaquete = (precioBase * (1 - 0.36)).toFixed(2) + " €";
+          pedidoPaquete38 = (precioBase * (1 - 0.38)).toFixed(2) + " €";
+          break;
+      }
+      
+      return {
+        pedidoPicking,
+        pedidoPaquete,
+        pedidoPaquete38
+      };
+    }
+
+    /********** RENDERIZADO DE TABLAS **********/
+    function renderTables() {
+      tablesContainer.innerHTML = "<h2>Tablas de Precios Netos</h2>";
+      
+      tablesData.forEach((rows, index) => {
+        const tableWrapper = document.createElement("div");
+        tableWrapper.style.marginBottom = "2rem";
+        
+        const removeBtn = document.createElement("button");
+        removeBtn.textContent = " - ";
+        removeBtn.className = "close-btn";
+        removeBtn.style.marginBottom = "0.5rem";
+        removeBtn.addEventListener("click", () => {
+          tablesData.splice(index, 1);
+          renderTables();
+        });
+        
+        const table = document.createElement("table");
+        table.innerHTML = generateTableHTML(rows);
+        
+        tableWrapper.appendChild(removeBtn);
+        tableWrapper.appendChild(table);
+        tablesContainer.appendChild(tableWrapper);
+      });
+    }
+
+    function generateTableHTML(rows) {
+      let theadHTML = "<thead><tr>";
+      
+      if(columns.codigo) {
+        theadHTML += "<th>" + getColumnLabel("codigo") + "</th>";
+      }
+      
+      theadHTML += "<th>Descripción</th>";
+      
+      if(columns.medidas) {
+        theadHTML += "<th>" + getColumnLabel("medidas") + "</th>";
+      }
+      
+      if(columns.precioBase) {
+        theadHTML += "<th>" + getColumnLabel("precioBase") + "</th>";
+      }
+      
+      if(columns.pedidoPicking) {
+        theadHTML += "<th>" + getColumnLabel("pedidoPicking") + "</th>";
+      }
+      
+      if(columns.pedidoPaquete) {
+        theadHTML += "<th>" + getColumnLabel("pedidoPaquete") + "</th>";
+      }
+      
+      if(columns.pedidoPaquete38 && discountConfig !== "B") {
+        theadHTML += "<th>" + getColumnLabel("pedidoPaquete38") + "</th>";
+      }
+      
+      if(columns.unidadMedida) {
+        theadHTML += "<th>" + getColumnLabel("unidadMedida") + "</th>";
+      }
+      
+      if(columns.isOutlet) {
+        theadHTML += "<th>" + getColumnLabel("isOutlet") + "</th>";
+      }
+      
+      theadHTML += "</tr></thead>";
+      
+      let tbodyHTML = "<tbody>";
+      
+      rows.forEach(row => {
+        tbodyHTML += "<tr>";
+        
+        if(columns.codigo) {
+          tbodyHTML += `<td>${row.codigo}</td>`;
+        }
+        
+        tbodyHTML += `<td>${row.descripcion}</td>`;
+        
+        if(columns.medidas) {
+          tbodyHTML += `<td>${row.medidas}</td>`;
+        }
+        
+        if(columns.precioBase) {
+          tbodyHTML += `<td>${row.precioBase}</td>`;
+        }
+        
+        if(columns.pedidoPicking) {
+          tbodyHTML += `<td>${row.pedidoPicking}</td>`;
+        }
+        
+        if(columns.pedidoPaquete) {
+          tbodyHTML += `<td>${row.pedidoPaquete}</td>`;
+        }
+        
+        if(columns.pedidoPaquete38 && discountConfig !== "B") {
+          tbodyHTML += `<td>${row.pedidoPaquete38}</td>`;
+        }
+        
+        if(columns.unidadMedida) {
+          tbodyHTML += `<td>${row.unidadMedida}</td>`;
+        }
+        
+        if(columns.isOutlet) {
+          tbodyHTML += `<td>${row.isOutlet}</td>`;
+        }
+        
+        tbodyHTML += "</tr>";
+      });
+      
+      tbodyHTML += "</tbody>";
+      
+      return theadHTML + tbodyHTML;
+    }
+
+    /********** HELPERS **********/
+    function parseNumber(value) {
+      if(!value) return 0;
+      return parseFloat(value.replace(/\./g, "").replace(/,/g, ".")) || 0;
+    }
+    
+    function formatPrice(price) {
+      return price.toFixed(2).replace(".", ",") + " €";
+    }
+  </script>
+</body>
+</html>
