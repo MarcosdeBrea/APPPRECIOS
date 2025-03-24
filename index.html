@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Tabla Precios Web</title>
+  <title>App Combinada: JDE, Web y Madera Paquetes</title>
   <style>
-    /* Reset básico */
+    /* =============================
+       ESTILOS COMUNES (JDE y Web)
+       ============================= */
     * {
       margin: 0;
       padding: 0;
@@ -80,7 +82,6 @@
     button:hover {
       background-color: #005dc1;
     }
-    /* Botón de cerrar sin color azul */
     .close-btn {
       background-color: transparent;
       border: none;
@@ -105,8 +106,7 @@
     tr:hover {
       background-color: #f9f9f9;
     }
-    /* Encabezado de impresión: se oculta en la vista normal y se muestra solo al imprimir */
-    #printHeader {
+    .printHeader {
       display: none;
       margin-bottom: 2rem;
     }
@@ -125,16 +125,14 @@
       text-align: right;
       padding: 10px;
     }
-    /* Ocultar la tarjeta de controles en la impresión */
     .no-print {
       display: block;
     }
-    /************ REGLAS PARA IMPRESIÓN ************/
     @media print {
       .no-print {
         display: none !important;
       }
-      #printHeader {
+      .printHeader {
         display: block !important;
       }
       body {
@@ -172,116 +170,681 @@
         width: 100%;
       }
     }
+    /* =============================
+       ESTILOS DE LA APP "MADERA PAQUETES"
+       ============================= */
+    /* Estos estilos se suman a los anteriores.
+       Algunas clases (container, card) se usan en ambas apps */
+    .headerMadera {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .config-section {
+      background: #fff;
+      padding: 1rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    .cards-container {
+      display: grid;
+      gap: 1rem;
+    }
+    .cardMadera {
+      background: #fff;
+      border-radius: 6px;
+      padding: 1rem;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      position: relative;
+    }
+    .delete-btn {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: #fff;
+      border: 1px solid #ccc;
+      color: #333;
+      padding: 0.2rem 0.5rem;
+      font-size: 0.8rem;
+      border-radius: 4px;
+    }
+    .delete-btn:hover {
+      background: #fee;
+      border-color: #f88;
+      color: #a00;
+    }
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .company-text {
+      background: black;
+      color: white;
+      font-size: 37px;
+      padding: 10px;
+      white-space: nowrap;
+    }
+    .contact-info {
+      font-size: 0.9rem;
+      line-height: 1.3;
+    }
+    .disclaimers {
+      list-style: none;
+      padding: 0;
+      margin: 0.5rem 0;
+      font-size: 0.9rem;
+    }
+    table.madera-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.5rem 0;
+    }
+    table.madera-table th,
+    table.madera-table td {
+      padding: 0.4rem;
+      border: 1px solid #ddd;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+    table.madera-table th {
+      background: #f0f0f0;
+    }
+    /* Botones propios de Madera Paquetes */
+    .btn {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      border: 1px solid #ccc;
+      background: #fff;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      transition: background 0.2s;
+    }
+    .btn:hover {
+      background: #f0f0f0;
+    }
+    .btn-outline {
+      border: 1px solid #666;
+      background: none;
+    }
+    .btn-destructive {
+      border: 1px solid #d00;
+      background: #fff0f0;
+      color: #d00;
+    }
+    .btn-sm {
+      padding: 0.2rem 0.5rem;
+      font-size: 0.8rem;
+    }
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      outline: none;
+    }
+    input[type="text"]:focus, textarea:focus {
+      border-color: #666;
+    }
+    /* Ocultar elementos al imprimir en Madera */
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+    }
   </style>
 </head>
 <body>
-  <!-- Encabezado para impresión -->
-  <div id="printHeader">
-    <div class="header-row">
-      <div class="brand">Gabarró</div>
-      <div class="contact">
-        <p style="margin:0;">
-          <strong>Marcos Sanchez</strong><br>
-          Tel. 669 22 80 10<br>
-          Email Consultas: marcos.sanchez@gabarro.com<br>
-          Email Pedidos: ventas.galicia@gabarro.com
-        </p>
+  <!-- ============================================================
+       SELECTOR GLOBAL (No se imprime)
+       ============================================================ -->
+  <div class="container no-print">
+    <div class="card">
+      <h1>Seleccione el Modo</h1>
+      <div class="flex justify-center items-center">
+        <label>
+          <input type="radio" name="modeSelector" value="JDE" checked>
+          JDE
+        </label>
+        <label>
+          <input type="radio" name="modeSelector" value="WEB">
+          Web
+        </label>
+        <label>
+          <input type="radio" name="modeSelector" value="MADERA">
+          Madera Paquetes
+        </label>
       </div>
     </div>
-    <div style="margin-top:1rem;">
-      <p>
-        <strong>Precio picking:</strong> se aplica para pedidos superiores a 180 € Netos.<br>
-        <strong>Portes:</strong> 30 € para pedidos con un importe inferior a 400 € netos.
-      </p>
-    </div>
-    <hr>
   </div>
 
-  <div class="container">
-    <!-- Sección de controles (NO se imprimirá) -->
+  <!-- ============================================================
+       APP JDE
+       ============================================================ -->
+  <div id="jdeApp" class="container">
+    <!-- Encabezado de impresión JDE -->
+    <div id="jdePrintHeader" class="printHeader">
+      <div class="header-row">
+        <div class="brand">Gabarró</div>
+        <div class="contact">
+          <p style="margin:0;">
+            <strong>Marcos Sanchez</strong><br>
+            Tel. 669 22 80 10<br>
+            Email Consultas: marcos.sanchez@gabarro.com<br>
+            Email Pedidos: ventas.galicia@gabarro.com
+          </p>
+        </div>
+      </div>
+      <div style="margin-top:1rem;">
+        <p>
+          <strong>Precio picking:</strong> se aplica para pedidos superiores a 180 € netos.<br>
+          <strong>Portes:</strong> 30 € para pedidos con un importe inferior a 400 € netos.<br>
+          <strong>Aviso:</strong> Esta tarifa puede estar sujeta a variaciones; verifiquen el precio antes de realizar el pedido.
+        </p>
+      </div>
+      <hr>
+    </div>
+    <!-- Controles JDE (NO se imprimen) -->
     <div class="card no-print">
-      <h1>Tabla Precios Web</h1>
+      <h1>Lienzo - Hoja de datos (JDE)</h1>
       <div style="text-align:right; margin-bottom:1rem;">
-        <button id="btnPrint">Imprimir PDF</button>
+        <button id="jdeBtnPrint">Imprimir PDF</button>
       </div>
       <div class="flex justify-center items-center" style="margin-bottom:0.5rem;">
         <label>
-          <input type="radio" name="discountConfig" value="A" checked>
-          Cliente A
+          <input type="radio" name="discountConfig" value="B0">
+          B0
         </label>
         <label>
-          <input type="radio" name="discountConfig" value="B">
-          Cliente B
+          <input type="radio" name="discountConfig" value="A3" checked>
+          A3
         </label>
         <label>
-          <input type="radio" name="discountConfig" value="M">
-          Cliente M
+          <input type="radio" name="discountConfig" value="M3">
+          M3
         </label>
       </div>
       <div class="form-section">
-        <label for="inputData">Pega aquí los datos:</label>
-        <textarea id="inputData"></textarea>
+        <label for="jdeInputData">Pega aquí los datos (JDE o WEB separados por tabuladores):</label>
+        <textarea id="jdeInputData"></textarea>
       </div>
       <div class="flex" style="justify-content:center; margin-top:0.5rem;">
-        <button id="btnAddTable">Agregar Tabla</button>
-        <button id="btnClearText">Borrar Texto</button>
+        <button id="jdeBtnAddTable">Agregar Tabla</button>
+        <button id="jdeBtnClearText">Borrar Texto</button>
       </div>
-      <!-- Casilla dedicada para Unidad (m²) -->
+      <!-- Nuevo selector de unidades en JDE -->
       <div class="flex justify-center items-center" style="margin-top:0.5rem;">
         <label>
-          <input type="checkbox" id="chkUnidad" checked>
+          <input type="checkbox" id="jdeChkUnidad" checked>
           Unidad (m²)
         </label>
       </div>
-      <!-- Se han quitado los checkboxes dinámicos adicionales -->
-      <div id="columnsContainer" class="flex flex-wrap justify-center items-center" style="margin-top:1rem;"></div>
+      <div id="jdeColumnsContainer" class="flex flex-wrap justify-center items-center" style="margin-top:1rem;">
+        <!-- Checkboxes dinámicos -->
+      </div>
     </div>
-
-    <!-- Contenedor de tablas (se imprimirá) -->
-    <div id="tablesContainer" class="card"></div>
+    <!-- Contenedor de tablas JDE (se imprimen) -->
+    <div id="jdeTablesContainer" class="card">
+      <!-- La cabecera se actualizará según la unidad seleccionada -->
+    </div>
   </div>
 
+  <!-- ============================================================
+       APP WEB
+       ============================================================ -->
+  <div id="webApp" class="container" style="display:none;">
+    <!-- Encabezado de impresión Web -->
+    <div id="webPrintHeader" class="printHeader">
+      <div class="header-row">
+        <div class="brand">Gabarró</div>
+        <div class="contact">
+          <p style="margin:0;">
+            <strong>Marcos Sanchez</strong><br>
+            Tel. 669 22 80 10<br>
+            Email Consultas: marcos.sanchez@gabarro.com<br>
+            Email Pedidos: ventas.galicia@gabarro.com
+          </p>
+        </div>
+      </div>
+      <div style="margin-top:1rem;">
+        <p>
+          <strong>Precio picking:</strong> se aplica para pedidos superiores a 180 € Netos.<br>
+          <strong>Portes:</strong> 30 € para pedidos con un importe inferior a 400 € netos.
+        </p>
+      </div>
+      <hr>
+    </div>
+    <!-- Controles Web (NO se imprimen) -->
+    <div class="card no-print">
+      <h1>Tabla Precios Web</h1>
+      <div style="text-align:right; margin-bottom:1rem;">
+        <button id="webBtnPrint">Imprimir PDF</button>
+      </div>
+      <div class="flex justify-center items-center" style="margin-bottom:0.5rem;">
+        <label>
+          <input type="radio" name="discountConfigWeb" value="A" checked>
+          Cliente A
+        </label>
+        <label>
+          <input type="radio" name="discountConfigWeb" value="B">
+          Cliente B
+        </label>
+        <label>
+          <input type="radio" name="discountConfigWeb" value="M">
+          Cliente M
+        </label>
+      </div>
+      <!-- Nuevo checkbox para Paquete 38% -->
+      <div class="flex justify-center items-center" style="margin-bottom:0.5rem;">
+        <label>
+          <input type="checkbox" id="webChkPaquete38">
+          Paquete 38%
+        </label>
+      </div>
+      <div class="form-section">
+        <label for="webInputData">Pega aquí los datos:</label>
+        <textarea id="webInputData"></textarea>
+      </div>
+      <div class="flex" style="justify-content:center; margin-top:0.5rem;">
+        <button id="webBtnAddTable">Agregar Tabla</button>
+        <button id="webBtnClearText">Borrar Texto</button>
+      </div>
+      <!-- Casilla para Unidad (m²) -->
+      <div class="flex justify-center items-center" style="margin-top:0.5rem;">
+        <label>
+          <input type="checkbox" id="webChkUnidad" checked>
+          Unidad (m²)
+        </label>
+      </div>
+      <div id="webColumnsContainer" class="flex flex-wrap justify-center items-center" style="margin-top:1rem;">
+        <!-- Checkboxes dinámicos -->
+      </div>
+    </div>
+    <!-- Contenedor de tablas Web (se imprimen) -->
+    <div id="webTablesContainer" class="card">
+      <!-- Las tablas se agregarán aquí -->
+    </div>
+  </div>
+
+  <!-- ============================================================
+       APP "MADERA PAQUETES"
+       ============================================================ -->
+  <div id="maderaApp" class="container" style="display:none;">
+    <div class="container">
+      <!-- Encabezado con título y botón de show/hide -->
+      <div class="header">
+        <h3>Tabla de Precios de Madera</h3>
+        <button class="btn btn-outline btn-sm no-print" id="toggleConfigBtn">-</button>
+      </div>
+
+      <!-- Sección de Configuración -->
+      <div class="config-section no-print" id="configSection">
+        <div style="margin-bottom: 1rem; display: flex; gap: 1.5rem; align-items: center;">
+          <div>
+            <input type="checkbox" id="onlyPackageChk" />
+            <label for="onlyPackageChk">Sólo Paquete</label>
+          </div>
+          <div>
+            <input type="checkbox" id="use36PackageChk" />
+            <label for="use36PackageChk">Paquete 38%</label>
+          </div>
+        </div>
+        <div class="config-grid" style="display: grid; gap: 1rem; margin-bottom: 1rem;">
+          <input type="text" placeholder="Descripción de la madera" id="descriptionInput" />
+          <input type="text" placeholder="Precio Base de la madera (€ por m³)" id="priceInput" />
+          <textarea placeholder="Medidas (picking). Se usan col[2] para m³ y la última col para largo." id="pickingDimensionsTextarea" rows="4"></textarea>
+          <textarea placeholder="Medidas (paquetes). Se usan col[3] para paquete, col[9] para m³, col[6] para largo." id="packageDimensionsTextarea" rows="4"></textarea>
+        </div>
+        <div style="display: flex; gap: 1rem;">
+          <button class="btn" id="addBtn">Añadir Madera</button>
+          <button class="btn btn-destructive" id="clearAllBtn">Borrar Todo</button>
+          <button class="btn btn-outline" id="printBtn">Imprimir</button>
+        </div>
+      </div>
+
+      <!-- Contenedor de tarjetas (maderas añadidas) -->
+      <div class="cards-container" id="cardsContainer">
+        <!-- Las tarjetas se insertarán aquí de forma dinámica -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SCRIPTS DE LA APP JDE y WEB
+       ============================================================ -->
   <script>
-    /********** CONFIGURACIÓN DE COLUMNAS **********/
-    let columns = {
-      codigo: true,
-      medidas: true,
-      precioBase: true,
-      pedidoPicking: true,
-      pedidoPaquete: true,
-      isOutlet: true
-    };
+    /********************* Selector Global *********************/
+    document.querySelectorAll('input[name="modeSelector"]').forEach(radio => {
+      radio.addEventListener("change", (e) => {
+        const value = e.target.value;
+        document.getElementById("jdeApp").style.display = (value === "JDE") ? "block" : "none";
+        document.getElementById("webApp").style.display = (value === "WEB") ? "block" : "none";
+        document.getElementById("maderaApp").style.display = (value === "MADERA") ? "block" : "none";
+      });
+    });
 
-    const columnLabelsDefault = {
-      codigo: "Código",
-      medidas: "Medidas",
-      precioBase: "Precio Base",
-      pedidoPicking: "Precio Picking",
-      pedidoPaquete: "Precio Paquete",
-      isOutlet: "Outlet"
-    };
+    /********************* Aplicación JDE *********************/
+    (function(){
+      let columns = {
+        precioBase: true,
+        pedido350: true,
+        pedidoPaquete34: true,
+        pedidoPaquete36: true,
+        unidadesPaquete: true,
+        stockSantiago: true,
+        stockCentral: true,
+        medidas: true
+      };
+      const columnLabelsDefault = {
+        precioBase: "Precio Base",
+        unidadesPaquete: "Unidades Paquete",
+        stockSantiago: "Stock Santiago",
+        stockCentral: "Stock Central",
+        medidas: "Medidas"
+      };
+      function getColumnLabel(key) {
+        if(key === "pedido350") {
+          return "Pedido Picking";
+        }
+        if(key === "pedidoPaquete34") {
+          return "Pedido Paquete";
+        }
+        if(key === "pedidoPaquete36") {
+          if(discountConfig === "B0") return "Pedido Paquete 35%";
+          return "Pedido Paquete 38%";
+        }
+        return columnLabelsDefault[key] || key;
+      }
 
-    function getColumnLabel(key) {
-      if(key === "pedidoPicking") return "Precio Picking";
-      if(key === "pedidoPaquete") return "Precio Paquete";
-      return columnLabelsDefault[key] || key;
-    }
+      let discountConfig = "A3";  // "B0", "A3" o "M3"
+      let tablesData = [];
 
-    /********** VARIABLES GLOBALES **********/
-    let discountConfig = "A";  // "A", "B" o "M"
-    let tablesData = [];
+      const jdeInputDataElem    = document.getElementById("jdeInputData");
+      const jdeBtnAddTable      = document.getElementById("jdeBtnAddTable");
+      const jdeBtnClearText     = document.getElementById("jdeBtnClearText");
+      const jdeBtnPrint         = document.getElementById("jdeBtnPrint");
+      const jdeColumnsContainer = document.getElementById("jdeColumnsContainer");
+      const jdeTablesContainer  = document.getElementById("jdeTablesContainer");
+      const jdeChkUnidad        = document.getElementById("jdeChkUnidad");
 
-    // Referencias al DOM
-    const inputDataElem = document.getElementById("inputData");
-    const btnAddTable = document.getElementById("btnAddTable");
-    const btnClearText = document.getElementById("btnClearText");
-    const btnPrint = document.getElementById("btnPrint");
-    const columnsContainer = document.getElementById("columnsContainer");
-    const tablesContainer = document.getElementById("tablesContainer");
-    const chkUnidad = document.getElementById("chkUnidad");
+      document.querySelectorAll('#jdeApp input[name="discountConfig"]').forEach(radio => {
+        radio.addEventListener("change", (e) => {
+          discountConfig = e.target.value;
+          renderColumnsCheckboxes();
+          renderTables();
+        });
+      });
+      jdeBtnAddTable.addEventListener("click", () => {
+        const newRows = parseData();
+        if(newRows.length > 0) {
+          tablesData.push(newRows);
+          renderTables();
+        }
+      });
+      jdeBtnClearText.addEventListener("click", () => {
+        jdeInputDataElem.value = "";
+      });
+      jdeBtnPrint.addEventListener("click", () => {
+        window.print();
+      });
+      jdeChkUnidad.addEventListener("change", () => {
+        renderTables();
+      });
+      renderColumnsCheckboxes();
 
-    document.addEventListener("DOMContentLoaded", () => {
-      document.querySelectorAll('input[name="discountConfig"]').forEach(radio => {
+      function renderColumnsCheckboxes() {
+        jdeColumnsContainer.innerHTML = "";
+        for(let colKey in columns) {
+          const label = document.createElement("label");
+          label.textContent = getColumnLabel(colKey);
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.checked = columns[colKey];
+          checkbox.addEventListener("change", () => {
+            columns[colKey] = checkbox.checked;
+            renderTables();
+          });
+          label.prepend(checkbox);
+          jdeColumnsContainer.appendChild(label);
+        }
+      }
+
+      function parseData() {
+        const input = jdeInputDataElem.value || "";
+        if(!input.trim()) return [];
+        return parseDataJDE(input);
+      }
+
+      function parseDataJDE(input) {
+        let rows = [];
+        const lines = input.split("\n");
+        const cantoRows = [];
+        const mainRows = [];
+        lines.forEach(line => {
+          const trimmed = line.trim();
+          if(!trimmed) return;
+          const parts = trimmed.split("\t");
+          if(parts.length < 15) return;
+          const descripcion = parts[3].trim();
+          const medidas = parts[4].trim();
+          const largo = parseNumber(parts[5]);
+          const ancho = parseNumber(parts[6]);
+          const alto = parseNumber(parts[7]);
+          const pvpNum = parseNumber(parts[8]);
+          const stockSantiagoNum = parseNumber(parts[9]);
+          const stockCentralNum = parseNumber(parts[10]);
+          const unidadesPaqueteVal = (parts[14].trim() === "1") ? "" : parts[14].trim();
+          let stockSantiago = "";
+          let stockCentral = "";
+          if (stockSantiagoNum > 0 || stockCentralNum > 0) {
+            if(largo !== 1000) {
+              const area = calculateArea(largo, ancho);
+              if(area > 0) {
+                const stSantiagoCalc = Math.floor(stockSantiagoNum / area);
+                const stCentralCalc = Math.floor(stockCentralNum / area);
+                if(stSantiagoCalc > 0) stockSantiago = stSantiagoCalc.toString();
+                if(stCentralCalc > 0) stockCentral = stCentralCalc.toString();
+              }
+            } else {
+              stockSantiago = stockSantiagoNum > 0 ? stockSantiagoNum.toString() : "";
+              stockCentral = stockCentralNum > 0 ? stockCentralNum.toString() : "";
+            }
+          }
+          const row = {
+            descripcion,
+            medidas,
+            alto,
+            pvpNum, // valor original
+            largo,
+            ancho,
+            stockSantiago,
+            stockCentral,
+            unidadesPaquete: unidadesPaqueteVal
+          };
+          if(descripcion.toLowerCase().startsWith("canto")) {
+            cantoRows.push(row);
+          } else {
+            mainRows.push(row);
+          }
+        });
+        mainRows.sort((a, b) => a.alto - b.alto);
+        rows = [...mainRows, ...cantoRows];
+        return rows;
+      }
+
+      function calculateDiscounts(precioBase) {
+        let pedidoPicking, pedidoPaquete, pedidoPaqueteFinal;
+        switch(discountConfig) {
+          case "B0":
+            pedidoPicking = (precioBase * (1 - 0.28)).toFixed(2) + " €";
+            pedidoPaquete = (precioBase * (1 - 0.33)).toFixed(2) + " €";
+            pedidoPaqueteFinal = (precioBase * (1 - 0.35)).toFixed(2) + " €";
+            break;
+          case "M3":
+            pedidoPicking = (precioBase * (1 - 0.33)).toFixed(2) + " €";
+            pedidoPaquete = (precioBase * (1 - 0.37)).toFixed(2) + " €";
+            pedidoPaqueteFinal = (precioBase * (1 - 0.38)).toFixed(2) + " €";
+            break;
+          default: // A3
+            pedidoPicking = (precioBase * (1 - 0.31)).toFixed(2) + " €";
+            pedidoPaquete = (precioBase * (1 - 0.36)).toFixed(2) + " €";
+            pedidoPaqueteFinal = (precioBase * (1 - 0.38)).toFixed(2) + " €";
+            break;
+        }
+        return {
+          pedido350: pedidoPicking,
+          pedidoPaquete34: pedidoPaquete,
+          pedidoPaquete36: pedidoPaqueteFinal
+        };
+      }
+
+      function renderTables() {
+        let unidadTexto = jdeChkUnidad.checked ? "por M2" : "por Tablero";
+        jdeTablesContainer.innerHTML = "<h2>Tablas de Precios Netos " + unidadTexto + "</h2>";
+        tablesData.forEach((rows, index) => {
+          const tableWrapper = document.createElement("div");
+          tableWrapper.style.marginBottom = "2rem";
+          const removeBtn = document.createElement("button");
+          removeBtn.textContent = " - ";
+          removeBtn.className = "close-btn";
+          removeBtn.style.marginBottom = "0.5rem";
+          removeBtn.addEventListener("click", () => {
+            tablesData.splice(index, 1);
+            renderTables();
+          });
+          const table = document.createElement("table");
+          table.innerHTML = generateTableHTML(rows);
+          tableWrapper.appendChild(removeBtn);
+          tableWrapper.appendChild(table);
+          jdeTablesContainer.appendChild(tableWrapper);
+        });
+      }
+
+      function generateTableHTML(rows) {
+        let theadHTML = "<thead><tr>";
+        theadHTML += "<th>Descripción</th>";
+        if(columns.medidas) {
+          theadHTML += "<th>" + getColumnLabel("medidas") + "</th>";
+        }
+        if(columns.precioBase) {
+          theadHTML += "<th>" + getColumnLabel("precioBase") + "</th>";
+        }
+        if(columns.pedido350) {
+          theadHTML += "<th>" + getColumnLabel("pedido350") + "</th>";
+        }
+        if(columns.pedidoPaquete34) {
+          theadHTML += "<th>" + getColumnLabel("pedidoPaquete34") + "</th>";
+        }
+        if(columns.pedidoPaquete36) {
+          theadHTML += "<th>" + getColumnLabel("pedidoPaquete36") + "</th>";
+        }
+        if(columns.unidadesPaquete) {
+          theadHTML += "<th>" + getColumnLabel("unidadesPaquete") + "</th>";
+        }
+        if(columns.stockSantiago) {
+          theadHTML += "<th>" + getColumnLabel("stockSantiago") + "</th>";
+        }
+        if(columns.stockCentral) {
+          theadHTML += "<th>" + getColumnLabel("stockCentral") + "</th>";
+        }
+        theadHTML += "</tr></thead>";
+        let tbodyHTML = "<tbody>";
+        rows.forEach(row => {
+          let basePrice;
+          if(document.getElementById("jdeChkUnidad").checked) {
+            basePrice = row.pvpNum;
+          } else {
+            if(row.largo !== 1000) {
+              const area = calculateArea(row.largo, row.ancho);
+              basePrice = parseFloat((area * row.pvpNum).toFixed(2));
+            } else {
+              basePrice = row.pvpNum;
+            }
+          }
+          const discounts = calculateDiscounts(basePrice);
+          tbodyHTML += "<tr>";
+          tbodyHTML += `<td>${row.descripcion}</td>`;
+          if(columns.medidas) {
+            tbodyHTML += `<td>${row.medidas}</td>`;
+          }
+          if(columns.precioBase) {
+            tbodyHTML += `<td>${basePrice.toFixed(2)} €</td>`;
+          }
+          if(columns.pedido350) {
+            tbodyHTML += `<td>${discounts.pedido350}</td>`;
+          }
+          if(columns.pedidoPaquete34) {
+            tbodyHTML += `<td>${discounts.pedidoPaquete34}</td>`;
+          }
+          if(columns.pedidoPaquete36) {
+            tbodyHTML += `<td>${discounts.pedidoPaquete36}</td>`;
+          }
+          if(columns.unidadesPaquete) {
+            tbodyHTML += `<td>${row.unidadesPaquete}</td>`;
+          }
+          if(columns.stockSantiago) {
+            tbodyHTML += `<td>${row.stockSantiago}</td>`;
+          }
+          if(columns.stockCentral) {
+            tbodyHTML += `<td>${row.stockCentral}</td>`;
+          }
+          tbodyHTML += "</tr>";
+        });
+        tbodyHTML += "</tbody>";
+        return theadHTML + tbodyHTML;
+      }
+
+      function parseNumber(value) {
+        if(!value) return 0;
+        return parseFloat(value.replace(/\./g, "").replace(/,/g, ".")) || 0;
+      }
+      function calculateArea(largo, ancho) {
+        return (largo / 1000) * (ancho / 1000);
+      }
+    })();
+
+    /********************* Aplicación Web *********************/
+    (function(){
+      let columns = {
+        codigo: true,
+        medidas: true,
+        precioBase: true,
+        pedidoPicking: true,
+        pedidoPaquete: true,
+        isOutlet: true
+      };
+      const columnLabelsDefault = {
+        codigo: "Código",
+        medidas: "Medidas",
+        precioBase: "Precio Base",
+        pedidoPicking: "Precio Picking",
+        pedidoPaquete: "Precio Paquete",
+        isOutlet: "Outlet"
+      };
+      function getColumnLabel(key) {
+        if(key === "pedidoPicking") return "Precio Picking";
+        if(key === "pedidoPaquete") return "Precio Paquete";
+        return columnLabelsDefault[key] || key;
+      }
+
+      let discountConfig = "A";  // "A", "B" o "M"
+      let tablesData = [];
+
+      const webInputDataElem    = document.getElementById("webInputData");
+      const webBtnAddTable      = document.getElementById("webBtnAddTable");
+      const webBtnClearText     = document.getElementById("webBtnClearText");
+      const webBtnPrint         = document.getElementById("webBtnPrint");
+      const webColumnsContainer = document.getElementById("webColumnsContainer");
+      const webTablesContainer  = document.getElementById("webTablesContainer");
+      const webChkUnidad        = document.getElementById("webChkUnidad");
+      const webChkPaquete38     = document.getElementById("webChkPaquete38");
+
+      document.querySelectorAll('#webApp input[name="discountConfigWeb"]').forEach(radio => {
         radio.addEventListener("change", (e) => {
           discountConfig = e.target.value;
           renderColumnsCheckboxes();
@@ -289,11 +852,14 @@
         });
       });
 
-      chkUnidad.addEventListener("change", () => {
+      webChkUnidad.addEventListener("change", () => {
+        renderTables();
+      });
+      webChkPaquete38.addEventListener("change", () => {
         renderTables();
       });
 
-      btnAddTable.addEventListener("click", () => {
+      webBtnAddTable.addEventListener("click", () => {
         const newRows = parseData();
         if(newRows.length > 0) {
           tablesData.push(newRows);
@@ -301,232 +867,427 @@
         }
       });
 
-      btnClearText.addEventListener("click", () => {
-        inputDataElem.value = "";
+      webBtnClearText.addEventListener("click", () => {
+        webInputDataElem.value = "";
       });
 
-      btnPrint.addEventListener("click", () => {
+      webBtnPrint.addEventListener("click", () => {
         window.print();
       });
 
       renderColumnsCheckboxes();
-    });
 
-    /********** RENDERIZADO DE CHECKBOXES **********/
-    function renderColumnsCheckboxes() {
-      columnsContainer.innerHTML = "";
-      for(let colKey in columns) {
-        // No se generan checkboxes adicionales para la unidad, para evitar duplicidad
-        if(colKey === "unidadMedida") continue;
-
-        const label = document.createElement("label");
-        label.textContent = getColumnLabel(colKey);
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.checked = columns[colKey];
-        checkbox.addEventListener("change", () => {
-          columns[colKey] = checkbox.checked;
-          renderTables();
-        });
-        label.prepend(checkbox);
-        columnsContainer.appendChild(label);
+      function renderColumnsCheckboxes() {
+        webColumnsContainer.innerHTML = "";
+        for(let colKey in columns) {
+          const label = document.createElement("label");
+          label.textContent = getColumnLabel(colKey);
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.checked = columns[colKey];
+          checkbox.addEventListener("change", () => {
+            columns[colKey] = checkbox.checked;
+            renderTables();
+          });
+          label.prepend(checkbox);
+          webColumnsContainer.appendChild(label);
+        }
       }
-    }
 
-    /********** PARSEO DE DATOS (NUEVO FORMATO) **********/
-    function parseData() {
-      const input = inputDataElem.value.trim();
-      if (!input) return [];
+      function parseData() {
+        const input = webInputDataElem.value.trim();
+        if (!input) return [];
+        const lines = input.split("\n").map(line => line.trim()).filter(line => line !== "");
+        let rows = [];
+        lines.forEach(line => {
+          const fields = line.split("\t");
+          let codigo = fields[0] || "";
+          let descripcionOriginal = fields[1] || "";
+          let descripcion = descripcionOriginal.replace(/\s+\d+\s+\d+\s+\d+(?:[.,]\d+)?\s*$/, "").trim();
+          let largo = parseNumber(fields[2]);
+          let ancho = parseNumber(fields[3]);
+          let grosor = parseNumber(fields[4]);
+          let formattedGrosor = (grosor % 1 === 0) ? grosor.toString() : grosor.toFixed(2).replace(".", ",");
+          let isOutlet = fields[5] && fields[5].toLowerCase().includes("outlet");
+          const precioStr = fields[8] || "0";
+          let precioMatch = precioStr.match(/([\d.,]+)/);
+          let priceM2 = precioMatch ? parseNumber(precioMatch[1]) : 0;
+          let medidas = `${largo}x${ancho}x${formattedGrosor}`;
+          let row = {
+            codigo,
+            descripcion,
+            largo,
+            ancho,
+            grosor,
+            priceM2,
+            medidas,
+            isOutlet: isOutlet ? "Sí" : "No"
+          };
+          rows.push(row);
+        });
+        rows.sort((a, b) => a.grosor - b.grosor);
+        return rows;
+      }
 
-      // Cada línea es un registro con campos separados por tabulaciones
-      const lines = input.split("\n").map(line => line.trim()).filter(line => line !== "");
-      let rows = [];
-
-      lines.forEach(line => {
-        const fields = line.split("\t");
-        // Mapeo:
-        // fields[0] => Código
-        // fields[1] => Descripción (contiene medidas al final que se quitarán)
-        // fields[2] => Largo
-        // fields[3] => Ancho
-        // fields[4] => Grosor (con punto decimal; si es .00 se muestra sin decimales)
-        // fields[5] => "Outlet" (si existe)
-        // fields[8] => Precio (ej. "12,99 €")
-        let codigo = fields[0] || "";
-        let descripcionOriginal = fields[1] || "";
-        // Se quitan los últimos números (las medidas) de la descripción
-        let descripcion = descripcionOriginal.replace(/\s+\d+\s+\d+\s+\d+(?:[.,]\d+)?\s*$/, "").trim();
-
-        let largo = parseNumber(fields[2]);
-        let ancho = parseNumber(fields[3]);
-        let grosor = parseNumber(fields[4]);
-        // Formatear el grosor: si es entero se muestra sin decimales
-        let formattedGrosor = (grosor % 1 === 0) ? grosor.toString() : grosor.toFixed(2).replace(".", ",");
-
-        let isOutlet = fields[5] && fields[5].toLowerCase().includes("outlet");
-
-        // Extraer el precio (pvp) del campo 9 (índice 8)
-        const precioStr = fields[8] || "0";
-        let precioMatch = precioStr.match(/([\d.,]+)/);
-        let priceM2 = precioMatch ? parseNumber(precioMatch[1]) : 0;
-
-        // Armar la cadena de medidas usando el grosor formateado
-        let medidas = `${largo}x${ancho}x${formattedGrosor}`;
-
-        let row = {
-          codigo,
-          descripcion,
-          largo,
-          ancho,
-          grosor,
-          priceM2,
-          medidas,
-          isOutlet: isOutlet ? "Sí" : "No"
-        };
-
-        rows.push(row);
-      });
-
-      // Ordenar por grosor ascendente (opcional)
-      rows.sort((a, b) => a.grosor - b.grosor);
-      return rows;
-    }
-
-    /********** CÁLCULO DE DESCUENTOS **********/
-    // Se recibe el precio base (pvp o calculado) y se aplican los descuentos
-    function calculateDiscounts(precioBase) {
-      let precioPicking, precioPaquete;
-
-      switch(discountConfig) {
-        case "B":
+      function calculateDiscounts(precioBase) {
+        let precioPicking, precioPaquete;
+        if(discountConfig === "B") {
           precioPicking = (precioBase * (1 - 0.28)).toFixed(2) + " €";
           precioPaquete = (precioBase * (1 - 0.33)).toFixed(2) + " €";
-          break;
-        case "M":
+        } else if(discountConfig === "M") {
           precioPicking = (precioBase * (1 - 0.34)).toFixed(2) + " €";
-          precioPaquete = (precioBase * (1 - 0.37)).toFixed(2) + " €";
-          break;
-        default: // Cliente A
+          if(webChkPaquete38.checked) {
+            precioPaquete = (precioBase * (1 - 0.38)).toFixed(2) + " €";
+          } else {
+            precioPaquete = (precioBase * (1 - 0.37)).toFixed(2) + " €";
+          }
+        } else { // Cliente A
           precioPicking = (precioBase * (1 - 0.31)).toFixed(2) + " €";
-          precioPaquete = (precioBase * (1 - 0.36)).toFixed(2) + " €";
-          break;
+          if(webChkPaquete38.checked) {
+            precioPaquete = (precioBase * (1 - 0.38)).toFixed(2) + " €";
+          } else {
+            precioPaquete = (precioBase * (1 - 0.36)).toFixed(2) + " €";
+          }
+        }
+        return {
+          pedidoPicking: precioPicking,
+          pedidoPaquete: precioPaquete
+        };
       }
 
-      return {
-        pedidoPicking: precioPicking,
-        pedidoPaquete: precioPaquete
-      };
-    }
-
-    /********** RENDERIZADO DE TABLAS **********/
-    function renderTables() {
-      // Actualiza el título con la coletilla según la casilla Unidad
-      let unidadTexto = chkUnidad.checked ? "por M2" : "por Tablero";
-      tablesContainer.innerHTML = `<h2>Tablas de Precios Netos ${unidadTexto}</h2>`;
-
-      tablesData.forEach((rows, index) => {
-        const tableWrapper = document.createElement("div");
-        tableWrapper.style.marginBottom = "2rem";
-
-        const removeBtn = document.createElement("button");
-        removeBtn.textContent = " - ";
-        removeBtn.className = "close-btn";
-        removeBtn.style.marginBottom = "0.5rem";
-        removeBtn.addEventListener("click", () => {
-          tablesData.splice(index, 1);
-          renderTables();
+      function renderTables() {
+        let unidadTexto = webChkUnidad.checked ? "por M2" : "por Tablero";
+        webTablesContainer.innerHTML = `<h2>Tablas de Precios Netos ${unidadTexto}</h2>`;
+        tablesData.forEach((rows, index) => {
+          const tableWrapper = document.createElement("div");
+          tableWrapper.style.marginBottom = "2rem";
+          const removeBtn = document.createElement("button");
+          removeBtn.textContent = " - ";
+          removeBtn.className = "close-btn";
+          removeBtn.style.marginBottom = "0.5rem";
+          removeBtn.addEventListener("click", () => {
+            tablesData.splice(index, 1);
+            renderTables();
+          });
+          const table = document.createElement("table");
+          table.innerHTML = generateTableHTML(rows);
+          tableWrapper.appendChild(removeBtn);
+          tableWrapper.appendChild(table);
+          webTablesContainer.appendChild(tableWrapper);
         });
-
-        const table = document.createElement("table");
-        table.innerHTML = generateTableHTML(rows);
-
-        tableWrapper.appendChild(removeBtn);
-        tableWrapper.appendChild(table);
-        tablesContainer.appendChild(tableWrapper);
-      });
-    }
-
-    // Genera la tabla recalculando precios según si la casilla "Unidad" (m²) está marcada o no.
-    function generateTableHTML(rows) {
-      let theadHTML = "<thead><tr>";
-
-      if(columns.codigo) {
-        theadHTML += "<th>" + getColumnLabel("codigo") + "</th>";
       }
-      theadHTML += "<th>Descripción</th>";
-      if(columns.medidas) {
-        theadHTML += "<th>" + getColumnLabel("medidas") + "</th>";
-      }
-      if(columns.precioBase) {
-        theadHTML += "<th>" + getColumnLabel("precioBase") + "</th>";
-      }
-      if(columns.pedidoPicking) {
-        theadHTML += "<th>" + getColumnLabel("pedidoPicking") + "</th>";
-      }
-      if(columns.pedidoPaquete) {
-        theadHTML += "<th>" + getColumnLabel("pedidoPaquete") + "</th>";
-      }
-      if(columns.isOutlet) {
-        theadHTML += "<th>" + getColumnLabel("isOutlet") + "</th>";
-      }
-      theadHTML += "</tr></thead>";
 
-      let tbodyHTML = "<tbody>";
-      rows.forEach(row => {
-        // Si la descripción contiene "canto", se usa el pvp sin multiplicar
-        let basePrice;
-        if(row.descripcion.toLowerCase().includes("canto")){
-          basePrice = row.priceM2;
-        } else {
-          basePrice = chkUnidad.checked ? row.priceM2 : ((row.largo * row.ancho) / 1000000) * row.priceM2;
-        }
-        let discounts = calculateDiscounts(basePrice);
-        // Si es "canto", dejamos en blanco el precio por paquete
-        if(row.descripcion.toLowerCase().includes("canto")){
-          discounts.pedidoPaquete = "";
-        }
-        let precioBaseFormatted = formatPrice(basePrice);
-
-        tbodyHTML += "<tr>";
+      function generateTableHTML(rows) {
+        let theadHTML = "<thead><tr>";
         if(columns.codigo) {
-          tbodyHTML += `<td>${row.codigo}</td>`;
+          theadHTML += "<th>" + getColumnLabel("codigo") + "</th>";
         }
-        tbodyHTML += `<td>${row.descripcion}</td>`;
+        theadHTML += "<th>Descripción</th>";
         if(columns.medidas) {
-          tbodyHTML += `<td>${row.medidas}</td>`;
+          theadHTML += "<th>" + getColumnLabel("medidas") + "</th>";
         }
         if(columns.precioBase) {
-          tbodyHTML += `<td>${precioBaseFormatted}</td>`;
+          theadHTML += "<th>" + getColumnLabel("precioBase") + "</th>";
         }
         if(columns.pedidoPicking) {
-          tbodyHTML += `<td>${discounts.pedidoPicking}</td>`;
+          theadHTML += "<th>" + getColumnLabel("pedidoPicking") + "</th>";
         }
         if(columns.pedidoPaquete) {
-          tbodyHTML += `<td>${discounts.pedidoPaquete}</td>`;
+          theadHTML += "<th>" + getColumnLabel("pedidoPaquete") + "</th>";
         }
         if(columns.isOutlet) {
-          tbodyHTML += `<td>${row.isOutlet}</td>`;
+          theadHTML += "<th>" + getColumnLabel("isOutlet") + "</th>";
         }
-        tbodyHTML += "</tr>";
-      });
-      tbodyHTML += "</tbody>";
+        theadHTML += "</tr></thead>";
+        let tbodyHTML = "<tbody>";
+        rows.forEach(row => {
+          let basePrice;
+          if(row.descripcion.toLowerCase().includes("canto")){
+            basePrice = row.priceM2;
+          } else {
+            basePrice = webChkUnidad.checked ? row.priceM2 : ((row.largo * row.ancho) / 1000000) * row.priceM2;
+          }
+          let discounts = calculateDiscounts(basePrice);
+          if(row.descripcion.toLowerCase().includes("canto")){
+            discounts.pedidoPaquete = "";
+          }
+          let precioBaseFormatted = formatPrice(basePrice);
+          tbodyHTML += "<tr>";
+          if(columns.codigo) {
+            tbodyHTML += `<td>${row.codigo}</td>`;
+          }
+          tbodyHTML += `<td>${row.descripcion}</td>`;
+          if(columns.medidas) {
+            tbodyHTML += `<td>${row.medidas}</td>`;
+          }
+          if(columns.precioBase) {
+            tbodyHTML += `<td>${precioBaseFormatted}</td>`;
+          }
+          if(columns.pedidoPicking) {
+            tbodyHTML += `<td>${discounts.pedidoPicking}</td>`;
+          }
+          if(columns.pedidoPaquete) {
+            tbodyHTML += `<td>${discounts.pedidoPaquete}</td>`;
+          }
+          if(columns.isOutlet) {
+            tbodyHTML += `<td>${row.isOutlet}</td>`;
+          }
+          tbodyHTML += "</tr>";
+        });
+        tbodyHTML += "</tbody>";
+        return theadHTML + tbodyHTML;
+      }
 
-      return theadHTML + tbodyHTML;
+      function parseNumber(value) {
+        if(!value) return 0;
+        if(value.indexOf(",") >= 0) {
+          return parseFloat(value.replace(/\./g, "").replace(/,/g, "."));
+        } else {
+          return parseFloat(value);
+        }
+      }
+
+      function formatPrice(price) {
+        return price.toFixed(2).replace(".", ",") + " €";
+      }
+    })();
+  </script>
+
+  <!-- ============================================================
+       SCRIPTS DE LA APP "MADERA PAQUETES"
+       ============================================================ -->
+  <script>
+    // Funciones de ayuda específicas para Madera Paquetes
+    function parseNumberES(val) {
+      val = val.replace(/\s+/g, "");
+      if (val.includes(",")) {
+        val = val.replace(/\./g, "");
+        val = val.replace(",", ".");
+      }
+      const parsed = parseFloat(val);
+      return isNaN(parsed) ? 0 : parsed;
     }
-
-    /********** HELPERS **********/
-    function parseNumber(value) {
-      if(!value) return 0;
-      if(value.indexOf(",") >= 0) {
-        return parseFloat(value.replace(/\./g, "").replace(/,/g, "."));
-      } else {
-        return parseFloat(value);
+    function formatNumberES(val) {
+      return parseFloat(val).toLocaleString("es-ES", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    }
+    function mapWarehouseCode(code) {
+      switch (code) {
+        case "01":
+          return "Central";
+        case "04":
+          return "Madrid";
+        case "08":
+          return "Galicia";
+        default:
+          return code;
       }
     }
-
-    function formatPrice(price) {
-      return price.toFixed(2).replace(".", ",") + " €";
+    function generatePickingTable(dimensions) {
+      const lines = dimensions.split("\n").map(l => l.trim()).filter(l => l);
+      if (!lines.length) return "";
+      let html = `
+        <h3 style="margin-top: 1rem;">PICKING</h3>
+        <table class="madera-table">
+          <thead>
+            <tr>
+              <th>Almacén</th>
+              <th>Metros Cúbicos</th>
+              <th>Largo</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      lines.forEach(line => {
+        const cols = line.split("\t").map(c => c.trim());
+        if (cols.length < 3) return;
+        const warehouseName = mapWarehouseCode(cols[0] || "");
+        const m3final = formatNumberES(parseNumberES(cols[2] || "0")) + " m³";
+        const lengthFinal = Math.round(parseNumberES(cols[cols.length - 1] || "0")) + " mm";
+        html += `
+          <tr>
+            <td>${warehouseName}</td>
+            <td>${m3final}</td>
+            <td>${lengthFinal}</td>
+          </tr>
+        `;
+      });
+      html += `
+          </tbody>
+        </table>
+      `;
+      return html;
     }
+    function generatePackagesTables(dimensions) {
+      const lines = dimensions.split("\n").map(l => l.trim()).filter(l => l);
+      if (!lines.length) return "";
+      const groups = {};
+      lines.forEach(line => {
+        const cols = line.split("\t").map(c => c.trim());
+        if (cols.length < 10) return;
+        const warehouseName = mapWarehouseCode(cols[0] || "");
+        const packageNumber = cols[3] || "";
+        const m3final = formatNumberES(parseNumberES(cols[9] || "0")) + " m³";
+        const lengthFinal = Math.round(parseNumberES(cols[6] || "0")) + " mm";
+        if (!groups[packageNumber]) groups[packageNumber] = [];
+        groups[packageNumber].push({ warehouseName, packageNumber, m3final, lengthFinal });
+      });
+      const packageNumbers = Object.keys(groups);
+      if (!packageNumbers.length) return "";
+      let html = `<h3 style="margin-top: 1rem;">PAQUETES</h3>`;
+      packageNumbers.forEach(pkgNum => {
+        const rows = groups[pkgNum];
+        html += `
+          <table class="madera-table">
+            <thead>
+              <tr>
+                <th>Almacén</th>
+                <th>Número de Paquete</th>
+                <th>Metros Cúbicos</th>
+                <th>Largo</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+        rows.forEach(r => {
+          html += `
+            <tr>
+              <td>${r.warehouseName}</td>
+              <td>${r.packageNumber}</td>
+              <td>${r.m3final}</td>
+              <td>${r.lengthFinal}</td>
+            </tr>
+          `;
+        });
+        html += `
+            </tbody>
+          </table>
+        `;
+      });
+      return html;
+    }
+
+    // Variables y referencias para Madera Paquetes
+    let woodData = [];
+    const toggleConfigBtn = document.getElementById("toggleConfigBtn");
+    const configSection = document.getElementById("configSection");
+    const onlyPackageChk = document.getElementById("onlyPackageChk");
+    const use36PackageChk = document.getElementById("use36PackageChk");
+    const descriptionInput = document.getElementById("descriptionInput");
+    const priceInput = document.getElementById("priceInput");
+    const pickingDimensionsTextarea = document.getElementById("pickingDimensionsTextarea");
+    const packageDimensionsTextarea = document.getElementById("packageDimensionsTextarea");
+    const addBtn = document.getElementById("addBtn");
+    const clearAllBtn = document.getElementById("clearAllBtn");
+    const printBtn = document.getElementById("printBtn");
+    const cardsContainer = document.getElementById("cardsContainer");
+
+    function toggleConfig() {
+      if (configSection.style.display === "none") {
+        configSection.style.display = "block";
+        toggleConfigBtn.textContent = "-";
+      } else {
+        configSection.style.display = "none";
+        toggleConfigBtn.textContent = "+";
+      }
+    }
+    function addWoodEntry() {
+      const base = parseNumberES(priceInput.value);
+      const pickingP = base * 0.72; // 28% descuento → 72% del precio base
+      const normalPackageFactor = 0.64; // 36% descuento → 64% del precio base
+      const altPackageFactor = 0.62;    // 38% descuento → 62% del precio base
+      const packageFactor = use36PackageChk.checked ? altPackageFactor : normalPackageFactor;
+      const packageP = base * packageFactor;
+      const newEntry = {
+        description: descriptionInput.value.trim(),
+        pickingPrice: formatNumberES(pickingP),
+        packagePrice: formatNumberES(packageP),
+        pickingDimensions: pickingDimensionsTextarea.value.trim(),
+        packageDimensions: packageDimensionsTextarea.value.trim(),
+        onlyPackage: onlyPackageChk.checked
+      };
+      woodData.push(newEntry);
+      renderWoodData();
+    }
+    function clearAllEntries() {
+      descriptionInput.value = "";
+      priceInput.value = "";
+      pickingDimensionsTextarea.value = "";
+      packageDimensionsTextarea.value = "";
+      onlyPackageChk.checked = false;
+      use36PackageChk.checked = false;
+    }
+    function deleteEntry(index) {
+      woodData.splice(index, 1);
+      renderWoodData();
+    }
+    function handlePrint() {
+      window.print();
+    }
+    function renderWoodData() {
+      cardsContainer.innerHTML = "";
+      woodData.forEach((wood, index) => {
+        const headerHTML = `
+          <div class="card-header">
+            <div class="company-text">Gabarró</div>
+            <div class="contact-info">
+              <strong>Marcos Sanchez</strong><br/>
+              Tel. 669 22 80 10<br/>
+              Email Consultas: <a href="mailto:marcos.sanchez@gabarro.com" style="color:black;text-decoration:none;">marcos.sanchez@gabarro.com</a><br/>
+              Email Pedidos: <a href="mailto:ventas.galicia@gabarro.com" style="color:black;text-decoration:none;">ventas.galicia@gabarro.com</a>
+            </div>
+          </div>
+          <ul class="disclaimers">
+            <li><strong>Precio picking:</strong> se aplica para pedidos superiores a 180 € netos.</li>
+            <li><strong>Portes:</strong> 30 € para pedidos con un importe inferior a 400 € netos.</li>
+            <li><strong>Aviso:</strong> Esta tarifa puede estar sujeta a variaciones; verifiquen el precio antes de realizar el pedido.</li>
+          </ul>
+          <hr style="margin: 1rem 0; border: none; border-top: 1px solid #ccc;" />
+        `;
+        let tableHead = `
+          <tr>
+            <th>Descripción</th>
+            ${!wood.onlyPackage ? "<th>Precio Picking</th>" : ""}
+            <th>Precio Paquete</th>
+          </tr>
+        `;
+        let tableBody = `
+          <tr>
+            <td><strong>${wood.description}</strong></td>
+            ${!wood.onlyPackage ? `<td>${wood.pickingPrice} €/m³</td>` : ""}
+            <td>${wood.packagePrice} €/m³</td>
+          </tr>
+        `;
+        let pickingHTML = "";
+        if (!wood.onlyPackage && wood.pickingDimensions) {
+          pickingHTML = generatePickingTable(wood.pickingDimensions);
+        }
+        let packagesHTML = "";
+        if (wood.packageDimensions) {
+          packagesHTML = generatePackagesTables(wood.packageDimensions);
+        }
+        const cardHTML = `
+          <div class="cardMadera">
+            <button class="delete-btn no-print" onclick="deleteEntry(${index})">X</button>
+            ${headerHTML}
+            <table class="madera-table">
+              <thead>${tableHead}</thead>
+              <tbody>${tableBody}</tbody>
+            </table>
+            ${pickingHTML}
+            ${packagesHTML}
+          </div>
+        `;
+        cardsContainer.insertAdjacentHTML("beforeend", cardHTML);
+      });
+    }
+    toggleConfigBtn.addEventListener("click", toggleConfig);
+    addBtn.addEventListener("click", addWoodEntry);
+    clearAllBtn.addEventListener("click", clearAllEntries);
+    printBtn.addEventListener("click", handlePrint);
+    configSection.style.display = "block";
   </script>
 </body>
 </html>
