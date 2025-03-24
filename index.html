@@ -355,7 +355,7 @@
         let codigo = fields[0] || "";
         let descripcionOriginal = fields[1] || "";
         // Se quitan los últimos números (las medidas) de la descripción
-        let descripcion = descripcionOriginal.replace(/\s+\d+\s+\d+\s+\d+(?:\.\d+)?\s*$/, "").trim();
+        let descripcion = descripcionOriginal.replace(/\s+\d+\s+\d+\s+\d+(?:[.,]\d+)?\s*$/, "").trim();
 
         let largo = parseNumber(fields[2]);
         let ancho = parseNumber(fields[3]);
@@ -365,7 +365,7 @@
 
         let isOutlet = fields[5] && fields[5].toLowerCase().includes("outlet");
 
-        // Extraer el precio (precio por m²) del campo 9 (índice 8)
+        // Extraer el precio (pvp) del campo 9 (índice 8)
         const precioStr = fields[8] || "0";
         let precioMatch = precioStr.match(/([\d.,]+)/);
         let priceM2 = precioMatch ? parseNumber(precioMatch[1]) : 0;
@@ -393,7 +393,7 @@
     }
 
     /********** CÁLCULO DE DESCUENTOS **********/
-    // Se recibe el precio base (por m² o por tablero) y se aplican los descuentos
+    // Se recibe el precio base (pvp o calculado) y se aplican los descuentos
     function calculateDiscounts(precioBase) {
       let precioPicking, precioPaquete;
 
@@ -473,11 +473,18 @@
 
       let tbodyHTML = "<tbody>";
       rows.forEach(row => {
-        // Calcular el precio base según la casilla "Unidad":
-        // Si está marcada se usa el precio por m²; de lo contrario, se calcula el precio del tablero.
-        // Largo y ancho están en mm, se convierten a m² dividiendo su producto por 1,000,000.
-        let basePrice = chkUnidad.checked ? row.priceM2 : ((row.largo * row.ancho) / 1000000) * row.priceM2;
+        // Si la descripción contiene "canto", se usa el pvp sin multiplicar
+        let basePrice;
+        if(row.descripcion.toLowerCase().includes("canto")){
+          basePrice = row.priceM2;
+        } else {
+          basePrice = chkUnidad.checked ? row.priceM2 : ((row.largo * row.ancho) / 1000000) * row.priceM2;
+        }
         let discounts = calculateDiscounts(basePrice);
+        // Si es "canto", dejamos en blanco el precio por paquete
+        if(row.descripcion.toLowerCase().includes("canto")){
+          discounts.pedidoPaquete = "";
+        }
         let precioBaseFormatted = formatPrice(basePrice);
 
         tbodyHTML += "<tr>";
@@ -508,7 +515,6 @@
     }
 
     /********** HELPERS **********/
-    // Si el valor contiene coma (precio), se reemplazan los puntos y comas; si no, se usa parseFloat directamente.
     function parseNumber(value) {
       if(!value) return 0;
       if(value.indexOf(",") >= 0) {
