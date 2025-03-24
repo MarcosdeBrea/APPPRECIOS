@@ -233,22 +233,16 @@
           Unidad (m²)
         </label>
       </div>
-      <!-- Se eliminó el recuadro de checkboxes dinámicos para la unidad -->
-      <div id="columnsContainer" class="flex flex-wrap justify-center items-center" style="margin-top:1rem;">
-        <!-- Se generarán los checkboxes dinámicamente (menos "unidadMedida") -->
-      </div>
+      <!-- Se han quitado los checkboxes dinámicos adicionales -->
+      <div id="columnsContainer" class="flex flex-wrap justify-center items-center" style="margin-top:1rem;"></div>
     </div>
 
     <!-- Contenedor de tablas (se imprimirá) -->
-    <div id="tablesContainer" class="card">
-      <h2>Tablas de Precios Netos</h2>
-      <!-- Aquí se insertarán las tablas generadas -->
-    </div>
+    <div id="tablesContainer" class="card"></div>
   </div>
 
   <script>
     /********** CONFIGURACIÓN DE COLUMNAS **********/
-    // Se eliminó la propiedad "unidadMedida" de los checkboxes dinámicos para evitar duplicidad
     let columns = {
       codigo: true,
       medidas: true,
@@ -268,7 +262,6 @@
     };
 
     function getColumnLabel(key) {
-      // Se retornan etiquetas fijas para los descuentos, sin porcentajes
       if(key === "pedidoPicking") return "Precio Picking";
       if(key === "pedidoPaquete") return "Precio Paquete";
       return columnLabelsDefault[key] || key;
@@ -295,11 +288,11 @@
           renderTables();
         });
       });
-      
+
       chkUnidad.addEventListener("change", () => {
         renderTables();
       });
-      
+
       btnAddTable.addEventListener("click", () => {
         const newRows = parseData();
         if(newRows.length > 0) {
@@ -307,15 +300,15 @@
           renderTables();
         }
       });
-      
+
       btnClearText.addEventListener("click", () => {
         inputDataElem.value = "";
       });
-      
+
       btnPrint.addEventListener("click", () => {
         window.print();
       });
-      
+
       renderColumnsCheckboxes();
     });
 
@@ -323,9 +316,9 @@
     function renderColumnsCheckboxes() {
       columnsContainer.innerHTML = "";
       for(let colKey in columns) {
-        // Se salta la propiedad que controla la unidad para evitar duplicados
+        // No se generan checkboxes adicionales para la unidad, para evitar duplicidad
         if(colKey === "unidadMedida") continue;
-        
+
         const label = document.createElement("label");
         label.textContent = getColumnLabel(colKey);
         const checkbox = document.createElement("input");
@@ -344,11 +337,11 @@
     function parseData() {
       const input = inputDataElem.value.trim();
       if (!input) return [];
-      
+
       // Cada línea es un registro con campos separados por tabulaciones
       const lines = input.split("\n").map(line => line.trim()).filter(line => line !== "");
       let rows = [];
-      
+
       lines.forEach(line => {
         const fields = line.split("\t");
         // Mapeo:
@@ -359,30 +352,27 @@
         // fields[4] => Grosor (con punto decimal; si es .00 se muestra sin decimales)
         // fields[5] => "Outlet" (si existe)
         // fields[8] => Precio (ej. "12,99 €")
-        
         let codigo = fields[0] || "";
-        
-        // Quitar las medidas al final de la descripción (últimos números separados por espacios)
         let descripcionOriginal = fields[1] || "";
+        // Se quitan los últimos números (las medidas) de la descripción
         let descripcion = descripcionOriginal.replace(/\s+\d+\s+\d+\s+\d+(?:\.\d+)?\s*$/, "").trim();
-        
+
         let largo = parseNumber(fields[2]);
         let ancho = parseNumber(fields[3]);
         let grosor = parseNumber(fields[4]);
-        // Formatear el grosor: si es entero (ej. 10.00) se muestra como "10"
+        // Formatear el grosor: si es entero se muestra sin decimales
         let formattedGrosor = (grosor % 1 === 0) ? grosor.toString() : grosor.toFixed(2).replace(".", ",");
-        
+
         let isOutlet = fields[5] && fields[5].toLowerCase().includes("outlet");
-        
+
         // Extraer el precio (precio por m²) del campo 9 (índice 8)
         const precioStr = fields[8] || "0";
         let precioMatch = precioStr.match(/([\d.,]+)/);
         let priceM2 = precioMatch ? parseNumber(precioMatch[1]) : 0;
-        
+
         // Armar la cadena de medidas usando el grosor formateado
         let medidas = `${largo}x${ancho}x${formattedGrosor}`;
-        
-        // Guardar datos para recalcular precios según la unidad (largo y ancho están en mm)
+
         let row = {
           codigo,
           descripcion,
@@ -393,10 +383,10 @@
           medidas,
           isOutlet: isOutlet ? "Sí" : "No"
         };
-        
+
         rows.push(row);
       });
-      
+
       // Ordenar por grosor ascendente (opcional)
       rows.sort((a, b) => a.grosor - b.grosor);
       return rows;
@@ -406,7 +396,7 @@
     // Se recibe el precio base (por m² o por tablero) y se aplican los descuentos
     function calculateDiscounts(precioBase) {
       let precioPicking, precioPaquete;
-      
+
       switch(discountConfig) {
         case "B":
           precioPicking = (precioBase * (1 - 0.28)).toFixed(2) + " €";
@@ -421,7 +411,7 @@
           precioPaquete = (precioBase * (1 - 0.36)).toFixed(2) + " €";
           break;
       }
-      
+
       return {
         pedidoPicking: precioPicking,
         pedidoPaquete: precioPaquete
@@ -430,12 +420,14 @@
 
     /********** RENDERIZADO DE TABLAS **********/
     function renderTables() {
-      tablesContainer.innerHTML = "<h2>Tablas de Precios Netos</h2>";
-      
+      // Actualiza el título con la coletilla según la casilla Unidad
+      let unidadTexto = chkUnidad.checked ? "por M2" : "por Tablero";
+      tablesContainer.innerHTML = `<h2>Tablas de Precios Netos ${unidadTexto}</h2>`;
+
       tablesData.forEach((rows, index) => {
         const tableWrapper = document.createElement("div");
         tableWrapper.style.marginBottom = "2rem";
-        
+
         const removeBtn = document.createElement("button");
         removeBtn.textContent = " - ";
         removeBtn.className = "close-btn";
@@ -444,10 +436,10 @@
           tablesData.splice(index, 1);
           renderTables();
         });
-        
+
         const table = document.createElement("table");
         table.innerHTML = generateTableHTML(rows);
-        
+
         tableWrapper.appendChild(removeBtn);
         tableWrapper.appendChild(table);
         tablesContainer.appendChild(tableWrapper);
@@ -457,7 +449,7 @@
     // Genera la tabla recalculando precios según si la casilla "Unidad" (m²) está marcada o no.
     function generateTableHTML(rows) {
       let theadHTML = "<thead><tr>";
-      
+
       if(columns.codigo) {
         theadHTML += "<th>" + getColumnLabel("codigo") + "</th>";
       }
@@ -478,16 +470,16 @@
         theadHTML += "<th>" + getColumnLabel("isOutlet") + "</th>";
       }
       theadHTML += "</tr></thead>";
-      
+
       let tbodyHTML = "<tbody>";
       rows.forEach(row => {
         // Calcular el precio base según la casilla "Unidad":
         // Si está marcada se usa el precio por m²; de lo contrario, se calcula el precio del tablero.
-        // Nota: Largo y ancho están en mm, por lo que se convierten a m² dividiendo su producto por 1,000,000.
+        // Largo y ancho están en mm, se convierten a m² dividiendo su producto por 1,000,000.
         let basePrice = chkUnidad.checked ? row.priceM2 : ((row.largo * row.ancho) / 1000000) * row.priceM2;
         let discounts = calculateDiscounts(basePrice);
         let precioBaseFormatted = formatPrice(basePrice);
-        
+
         tbodyHTML += "<tr>";
         if(columns.codigo) {
           tbodyHTML += `<td>${row.codigo}</td>`;
@@ -511,16 +503,21 @@
         tbodyHTML += "</tr>";
       });
       tbodyHTML += "</tbody>";
-      
+
       return theadHTML + tbodyHTML;
     }
 
     /********** HELPERS **********/
+    // Si el valor contiene coma (precio), se reemplazan los puntos y comas; si no, se usa parseFloat directamente.
     function parseNumber(value) {
       if(!value) return 0;
-      return parseFloat(value.replace(/\./g, "").replace(/,/g, ".")) || 0;
+      if(value.indexOf(",") >= 0) {
+        return parseFloat(value.replace(/\./g, "").replace(/,/g, "."));
+      } else {
+        return parseFloat(value);
+      }
     }
-    
+
     function formatPrice(price) {
       return price.toFixed(2).replace(".", ",") + " €";
     }
