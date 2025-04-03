@@ -23,7 +23,7 @@
           <input type="radio" name="modeSelector" value="MADERA">
           Madera Paquetes
         </label>
-        <label> {/* Nueva opción */}
+        <label> <!-- Nueva opción -->
           <input type="radio" name="modeSelector" value="FABRICA">
           Fabrica
         </label>
@@ -32,6 +32,7 @@
   </div>
 
   <div id="jdeApp" class="container">
+    <!-- Contenido de JDE App -->
     <div id="jdePrintHeader" class="printHeader">
       <div class="header-row">
         <div class="brand">Gabarró</div>
@@ -91,9 +92,11 @@
     </div>
     <div id="jdeTablesContainer" class="card">
       </div>
+    <!-- Fin contenido JDE App -->
   </div>
 
   <div id="webApp" class="container" style="display:none;">
+    <!-- Contenido de Web App -->
     <div id="webPrintHeader" class="printHeader">
       <div class="header-row">
         <div class="brand">Gabarró</div>
@@ -158,10 +161,12 @@
     </div>
     <div id="webTablesContainer" class="card">
       </div>
+    <!-- Fin contenido Web App -->
   </div>
 
   <div id="maderaApp" class="container" style="display:none;">
-    <div class="container"> {/* Contenedor interno de Madera */}
+    <!-- Contenido de Madera App -->
+    <div class="container"> <!-- Contenedor interno de Madera -->
       <div class="header">
         <h3>Tabla de Precios de Madera</h3>
         <button class="btn btn-outline btn-sm no-print" id="toggleConfigBtn">-</button>
@@ -174,7 +179,7 @@
             <label for="onlyPackageChk">Sólo Paquete</label>
           </div>
           <div>
-             {/* Asegúrate que el ID coincide con el usado en JS ('use36PackageChk') */}
+             <!-- Asegúrate que el ID coincide con el usado en JS ('use36PackageChk') -->
             <input type="checkbox" id="use36PackageChk" />
             <label for="use36PackageChk">Paquete 38%</label>
           </div>
@@ -195,11 +200,12 @@
       <div class="cards-container" id="cardsContainer">
         </div>
     </div>
+    <!-- Fin contenido Madera App -->
   </div>
 
-  <div id="fabricaApp" class="container" style="display:none;"> {/* Nuevo contenedor, inicialmente oculto */}
-      {/* El HTML interno de Fabrica va aquí (sin DOCTYPE, head, style, script) */}
-      <div class="container"> {/* Contenedor interno de Fabrica */}
+  <div id="fabricaApp" class="container" style="display:none;"> <!-- Nuevo contenedor, inicialmente oculto -->
+      <!-- El HTML interno de Fabrica va aquí (sin DOCTYPE, head, style, script) -->
+      <div class="container"> <!-- Contenedor interno de Fabrica -->
         <h1>Generador de Tabla de Precios Fabrica</h1>
 
         <div class="client-selector no-print">
@@ -221,7 +227,7 @@
         </div>
 
         <div class="client-info no-print" id="clientInfo">
-            {/* El contenido se genera dinámicamente por JS */}
+            <!-- El contenido se genera dinámicamente por JS -->
         </div>
 
         <div class="input-group no-print">
@@ -245,12 +251,12 @@
 
         <div class="buttons no-print">
             <button id="addRow">Añadir Fila</button>
-            <button id="clearFields" class="delete">Borrar Todo</button> {/* Cuidado con ID repetido si no se encapsula JS */}
-            <button id="printTable" class="print">Imprimir</button> {/* Cuidado con ID repetido */}
+            <button id="clearFields" class="delete">Borrar Todo</button> <!-- Cuidado con ID repetido si no se encapsula JS -->
+            <button id="printTable" class="print">Imprimir</button> <!-- Cuidado con ID repetido -->
         </div>
 
         <div id="tableContainer">
-            <table class="price-table" id="priceTable"> {/* Cuidado con ID repetido */}
+            <table class="price-table" id="priceTable"> <!-- Cuidado con ID repetido -->
                 <thead>
                     <tr>
                         <th>Cantidad</th>
@@ -266,17 +272,17 @@
                 <tfoot>
                     <tr>
                         <td colspan="5" style="text-align: right;"><strong>Total:</strong></td>
-                        <td id="totalPrice">0.00 €</td> {/* Cuidado con ID repetido */}
+                        <td id="totalPrice">0.00 €</td> <!-- Cuidado con ID repetido -->
                         <td class="no-print"></td>
                     </tr>
                 </tfoot>
             </table>
         </div>
-    </div> {/* Fin contenedor interno Fabrica */}
-  </div> {/* Fin contenedor #fabricaApp */}
+    </div> <!-- Fin contenedor interno Fabrica -->
+  </div> <!-- Fin contenedor #fabricaApp -->
 
 
-  {/* Añadido 'defer' para asegurar que el HTML se cargue antes de ejecutar JS */}
+  <!-- Añadido 'defer' para asegurar que el HTML se cargue antes de ejecutar JS -->
   <script src="script.js" defer></script>
 </body>
 </html>
