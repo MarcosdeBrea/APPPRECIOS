@@ -6,6 +6,7 @@ document.querySelectorAll('input[name="modeSelector"]').forEach(radio => {
     document.getElementById("jdeApp").style.display = "none";
     document.getElementById("webApp").style.display = "none";
     document.getElementById("maderaApp").style.display = "none";
+    document.getElementById("fabricaApp").style.display = "none"; // Ocultar nueva app
 
     // Show the selected app container
     if (value === "JDE") {
@@ -14,11 +15,13 @@ document.querySelectorAll('input[name="modeSelector"]').forEach(radio => {
       document.getElementById("webApp").style.display = "block";
     } else if (value === "MADERA") {
       document.getElementById("maderaApp").style.display = "block";
+    } else if (value === "FABRICA") { // Mostrar nueva app
+      document.getElementById("fabricaApp").style.display = "block";
     }
   });
 });
 
-/********************* Aplicación JDE *********************/
+/********************* Aplicación JDE (IIFE) *********************/
 (function(){
   // State for JDE App
   let columns = {
@@ -66,6 +69,15 @@ document.querySelectorAll('input[name="modeSelector"]').forEach(radio => {
   const jdeTablesContainer  = document.getElementById("jdeTablesContainer");
   const jdeChkUnidad        = document.getElementById("jdeChkUnidad");
 
+  // --- Early Exit if Elements Don't Exist ---
+  // This prevents errors if the script runs but the corresponding HTML isn't visible/present
+  if (!jdeInputDataElem || !jdeBtnAddTable || !jdeBtnClearText || !jdeBtnPrint || !jdeColumnsContainer || !jdeTablesContainer || !jdeChkUnidad) {
+      // console.log("JDE elements not found, skipping JDE app initialization.");
+      return; // Exit this IIFE
+  }
+  // --- End Early Exit ---
+
+
   // Event Listeners for JDE App
   document.querySelectorAll('#jdeApp input[name="discountConfig"]').forEach(radio => {
     radio.addEventListener("change", (e) => {
@@ -82,7 +94,9 @@ document.querySelectorAll('input[name="modeSelector"]').forEach(radio => {
       renderTables(); // Render all tables including the new one
       jdeInputDataElem.value = ""; // Clear input after adding
     } else {
-      alert("No se pudieron procesar los datos. Verifica el formato."); // Inform user if parsing failed
+      // Use a more subtle notification or log instead of alert
+      console.warn("No se pudieron procesar los datos JDE. Verifica el formato.");
+      // alert("No se pudieron procesar los datos. Verifica el formato."); // Inform user if parsing failed
     }
   });
 
@@ -94,15 +108,21 @@ document.querySelectorAll('input[name="modeSelector"]').forEach(radio => {
     window.print(); // Trigger browser's print dialog
   });
 
-  jdeChkUnidad.addEventListener("change", () => {
-    renderTables(); // Re-render tables based on unit selection (m² or Tablero)
-  });
+  // Check if jdeChkUnidad exists before adding listener
+  if (jdeChkUnidad) {
+      jdeChkUnidad.addEventListener("change", () => {
+          renderTables(); // Re-render tables based on unit selection (m² or Tablero)
+      });
+  }
+
 
   // Initial rendering of column checkboxes
   renderColumnsCheckboxes();
 
   // Function to render checkboxes for column visibility
   function renderColumnsCheckboxes() {
+    // Check if container exists
+    if (!jdeColumnsContainer) return;
     jdeColumnsContainer.innerHTML = ""; // Clear existing checkboxes
     for(let colKey in columns) {
       const label = document.createElement("label");
@@ -126,6 +146,8 @@ document.querySelectorAll('input[name="modeSelector"]').forEach(radio => {
 
   // Function to parse input data (currently only JDE format)
   function parseData() {
+    // Check if element exists
+    if (!jdeInputDataElem) return [];
     const input = jdeInputDataElem.value || "";
     if(!input.trim()) return []; // Return empty if input is empty
     // Potentially add logic here to detect format (JDE vs WEB) if needed
@@ -146,7 +168,7 @@ document.querySelectorAll('input[name="modeSelector"]').forEach(radio => {
       const parts = trimmed.split("\t"); // Split by tab
       // Expecting at least 15 columns based on original logic
       if(parts.length < 15) {
-          console.warn("Skipping line due to insufficient columns:", line);
+          console.warn("Skipping JDE line due to insufficient columns:", line);
           return;
       };
 
@@ -243,6 +265,8 @@ document.querySelectorAll('input[name="modeSelector"]').forEach(radio => {
 
   // Function to render all tables based on tablesData array
   function renderTables() {
+    // Check if elements exist
+    if (!jdeTablesContainer || !jdeChkUnidad) return;
     // Determine unit text based on checkbox
     let unidadTexto = jdeChkUnidad.checked ? "por M²" : "por Tablero";
     jdeTablesContainer.innerHTML = `<h2>Tablas de Precios Netos ${unidadTexto}</h2>`; // Set main title
@@ -315,7 +339,7 @@ document.querySelectorAll('input[name="modeSelector"]').forEach(radio => {
     rows.forEach(row => {
       let basePriceForCalc; // Price used for discount calculation
       // Determine base price based on unit selection (m² or Tablero)
-      if(jdeChkUnidad.checked) {
+      if(jdeChkUnidad && jdeChkUnidad.checked) { // Check existence
         // Use the direct price (assumed to be per m²)
         basePriceForCalc = row.pvpNum;
       } else {
@@ -386,7 +410,7 @@ document.querySelectorAll('input[name="modeSelector"]').forEach(radio => {
 
 })(); // End of JDE App IIFE
 
-/********************* Aplicación Web *********************/
+/********************* Aplicación Web (IIFE) *********************/
 (function(){
   // State for Web App
   let columns = {
@@ -425,6 +449,13 @@ document.querySelectorAll('input[name="modeSelector"]').forEach(radio => {
   const webChkUnidad        = document.getElementById("webChkUnidad");
   const webChkPaquete38     = document.getElementById("webChkPaquete38"); // Checkbox for 38% package discount
 
+  // --- Early Exit if Elements Don't Exist ---
+  if (!webInputDataElem || !webBtnAddTable || !webBtnClearText || !webBtnPrint || !webColumnsContainer || !webTablesContainer || !webChkUnidad || !webChkPaquete38) {
+      // console.log("Web elements not found, skipping Web app initialization.");
+      return; // Exit this IIFE
+  }
+  // --- End Early Exit ---
+
   // Event Listeners for Web App
   document.querySelectorAll('#webApp input[name="discountConfigWeb"]').forEach(radio => {
     radio.addEventListener("change", (e) => {
@@ -449,7 +480,8 @@ document.querySelectorAll('input[name="modeSelector"]').forEach(radio => {
       renderTables(); // Render all tables
       webInputDataElem.value = ""; // Clear input
     } else {
-      alert("No se pudieron procesar los datos. Verifica el formato.");
+      // alert("No se pudieron procesar los datos. Verifica el formato.");
+      console.warn("No se pudieron procesar los datos Web. Verifica el formato.");
     }
   });
 
@@ -470,6 +502,7 @@ document.querySelectorAll('input[name="modeSelector"]').forEach(radio => {
 
   // Function to render checkboxes for column visibility
   function renderColumnsCheckboxes() {
+    if (!webColumnsContainer) return;
     webColumnsContainer.innerHTML = ""; // Clear existing checkboxes
     for(let colKey in columns) {
       const label = document.createElement("label");
@@ -492,6 +525,7 @@ document.querySelectorAll('input[name="modeSelector"]').forEach(radio => {
 
   // Function to parse input data for Web format
   function parseData() {
+    if (!webInputDataElem) return [];
     const input = webInputDataElem.value.trim();
     if (!input) return []; // Return empty if input is empty
 
@@ -502,7 +536,7 @@ document.querySelectorAll('input[name="modeSelector"]').forEach(radio => {
       const fields = line.split("\t"); // Split by tab
       // Basic check for expected number of fields (adjust if needed)
       if (fields.length < 9) {
-          console.warn("Skipping line due to insufficient columns:", line);
+          console.warn("Skipping Web line due to insufficient columns:", line);
           return;
       }
 
@@ -583,6 +617,7 @@ document.querySelectorAll('input[name="modeSelector"]').forEach(radio => {
 
   // Function to render all tables for Web app
   function renderTables() {
+    if (!webTablesContainer || !webChkUnidad) return;
     let unidadTexto = webChkUnidad.checked ? "por M²" : "por Tablero";
     webTablesContainer.innerHTML = `<h2>Tablas de Precios Netos ${unidadTexto}</h2>`; // Set title
 
@@ -634,12 +669,12 @@ document.querySelectorAll('input[name="modeSelector"]').forEach(radio => {
     theadHTML += "</tr></thead>";
 
     let tbodyHTML = "<tbody>";
-    const usePaquete38 = webChkPaquete38.checked; // Check state of 38% checkbox
+    const usePaquete38 = webChkPaquete38 && webChkPaquete38.checked; // Check existence
 
     rows.forEach(row => {
       let basePriceForCalc; // Price used for discount calculation
       // Determine base price based on unit selection (m² or Tablero)
-      if(webChkUnidad.checked) {
+      if(webChkUnidad && webChkUnidad.checked) { // Check existence
         basePriceForCalc = row.priceM2; // Use price per m² directly
       } else {
         // Calculate price per Tablero
@@ -687,59 +722,78 @@ document.querySelectorAll('input[name="modeSelector"]').forEach(radio => {
 })(); // End of Web App IIFE
 
 
-/********************* Aplicación Madera Paquetes *********************/
+/********************* Aplicación Madera Paquetes (IIFE) *********************/
 (function() {
-    // DOM Elements
-    const descriptionInput = document.getElementById('descriptionInput');
-    const priceInput = document.getElementById('priceInput');
-    const pickingTextarea = document.getElementById('pickingDimensionsTextarea');
-    const packageTextarea = document.getElementById('packageDimensionsTextarea');
-    const onlyPackageChk = document.getElementById('onlyPackageChk');
-    const use36PackageChk = document.getElementById('use36PackageChk'); // Renamed to use38PackageChk in HTML? Verify ID. Assuming use36PackageChk based on JS var name.
-    const addBtn = document.getElementById('addBtn');
-    const clearAllBtn = document.getElementById('clearAllBtn');
-    const printBtn = document.getElementById('printBtn');
-    const cardsContainer = document.getElementById('cardsContainer');
-    const toggleConfigBtn = document.getElementById('toggleConfigBtn');
-    const configSection = document.getElementById('configSection');
+    // DOM Elements specific to Madera App
+    const maderaAppContainer = document.getElementById('maderaApp'); // Get the main container
+     // Find elements *within* the maderaAppContainer to avoid selecting from other apps
+    const descriptionInput = maderaAppContainer?.querySelector('#descriptionInput'); // Use optional chaining
+    const priceInput = maderaAppContainer?.querySelector('#priceInput');
+    const pickingTextarea = maderaAppContainer?.querySelector('#pickingDimensionsTextarea');
+    const packageTextarea = maderaAppContainer?.querySelector('#packageDimensionsTextarea');
+    const onlyPackageChk = maderaAppContainer?.querySelector('#onlyPackageChk');
+    const use36PackageChk = maderaAppContainer?.querySelector('#use36PackageChk'); // Check this ID matches HTML
+    const addBtn = maderaAppContainer?.querySelector('#addBtn');
+    const clearAllBtn = maderaAppContainer?.querySelector('#clearAllBtn');
+    const printBtn = maderaAppContainer?.querySelector('#printBtn'); // Note: ID collision risk
+    const cardsContainer = maderaAppContainer?.querySelector('#cardsContainer');
+    const toggleConfigBtn = maderaAppContainer?.querySelector('#toggleConfigBtn');
+    const configSection = maderaAppContainer?.querySelector('#configSection');
+
+    // --- Early Exit if Elements Don't Exist ---
+    if (!maderaAppContainer || !descriptionInput || !priceInput || !addBtn || !cardsContainer || !configSection) {
+        // console.log("Madera elements not found, skipping Madera app initialization.");
+        return; // Exit this IIFE if essential elements are missing
+    }
+    // --- End Early Exit ---
+
 
     let woodData = []; // Array to store added wood package data
 
     // --- Event Listeners ---
-    addBtn.addEventListener('click', addWoodPackage);
-    clearAllBtn.addEventListener('click', clearAllPackages);
-    printBtn.addEventListener('click', () => window.print());
-    toggleConfigBtn.addEventListener('click', toggleConfigVisibility);
+    // Add checks for element existence before adding listeners
+    if (addBtn) addBtn.addEventListener('click', addWoodPackage);
+    if (clearAllBtn) clearAllBtn.addEventListener('click', clearAllPackages);
+    if (printBtn) printBtn.addEventListener('click', () => window.print()); // Simple print
+    if (toggleConfigBtn) toggleConfigBtn.addEventListener('click', toggleConfigVisibility);
+
     // Load data from localStorage on init
     loadFromLocalStorage();
 
     // --- Functions ---
 
     function toggleConfigVisibility() {
+        if (!configSection || !toggleConfigBtn) return;
         const isHidden = configSection.style.display === 'none';
         configSection.style.display = isHidden ? 'block' : 'none';
         toggleConfigBtn.textContent = isHidden ? '-' : '+';
     }
 
     function addWoodPackage() {
+        // Check required elements exist
+        if (!descriptionInput || !priceInput || !pickingTextarea || !packageTextarea || !onlyPackageChk || !use36PackageChk) return;
+
         const description = descriptionInput.value.trim();
         const basePrice = parseFloat(priceInput.value.replace(',', '.')); // Handle comma decimal
         const pickingDimensions = pickingTextarea.value.trim();
         const packageDimensions = packageTextarea.value.trim();
         const onlyPackage = onlyPackageChk.checked;
-        const use36Package = use36PackageChk.checked; // Use the correct checkbox ID variable
+        const use36Package = use36PackageChk.checked;
 
         // Basic validation
         if (!description || isNaN(basePrice) || basePrice <= 0) {
-            alert('Por favor, introduce una descripción y un precio base válido.');
+            // alert('Por favor, introduce una descripción y un precio base válido.');
+            console.warn('Madera: Descripción o precio base inválido.');
             return;
         }
         if (!onlyPackage && !pickingDimensions) {
-             alert('Por favor, introduce las medidas de picking o marca "Sólo Paquete".');
+            //  alert('Por favor, introduce las medidas de picking o marca "Sólo Paquete".');
+             console.warn('Madera: Faltan medidas de picking.');
              return;
         }
          if (!packageDimensions) {
-             alert('Por favor, introduce las medidas de paquete.');
+            //  alert('Por favor, introduce las medidas de paquete.');
+             console.warn('Madera: Faltan medidas de paquete.');
              return;
          }
 
@@ -747,13 +801,16 @@ document.querySelectorAll('input[name="modeSelector"]').forEach(radio => {
         const pickingData = parseDimensions(pickingDimensions, 2, -1); // col[2] for m³, last col for largo
         const packageData = parseDimensions(packageDimensions, 9, 6); // col[9] for m³, col[6] for largo
 
-        if (!onlyPackage && pickingData.length === 0) {
-            alert('Error al procesar las medidas de picking. Verifica el formato (separado por tabuladores).');
-            return;
+        if (!onlyPackage && pickingData.length === 0 && pickingDimensions) { // Only warn if text was provided but failed parsing
+            // alert('Error al procesar las medidas de picking. Verifica el formato (separado por tabuladores).');
+            console.warn('Madera: Error al procesar medidas de picking.');
+            // Allow adding if picking is optional and empty, but log error if text was present
+            // return; // Decide if this should prevent adding
         }
-        if (packageData.length === 0) {
-            alert('Error al procesar las medidas de paquete. Verifica el formato (separado por tabuladores).');
-            return;
+        if (packageData.length === 0 && packageDimensions) { // Only warn if text was provided but failed parsing
+            // alert('Error al procesar las medidas de paquete. Verifica el formato (separado por tabuladores).');
+             console.warn('Madera: Error al procesar medidas de paquete.');
+            return; // Package dimensions are mandatory
         }
 
 
@@ -786,7 +843,7 @@ document.querySelectorAll('input[name="modeSelector"]').forEach(radio => {
             if (!isNaN(m3) && !isNaN(largo) && m3 > 0 && largo > 0) {
                 data.push({ m3, largo });
             } else {
-                 console.warn(`Skipping dimension line due to invalid data: ${line}`);
+                 console.warn(`Madera: Skipping dimension line due to invalid data: ${line}`);
             }
         });
         return data;
@@ -805,6 +862,7 @@ document.querySelectorAll('input[name="modeSelector"]').forEach(radio => {
     }
 
     function renderCards() {
+        if (!cardsContainer) return;
         cardsContainer.innerHTML = ''; // Clear existing cards
         woodData.forEach(pkg => {
             const card = document.createElement('div');
@@ -928,42 +986,339 @@ document.querySelectorAll('input[name="modeSelector"]').forEach(radio => {
 
 
     function deletePackage(id) {
-        if (confirm('¿Estás seguro de que quieres eliminar esta madera?')) {
+        // Optional: Add confirmation dialog
+        // if (confirm('¿Estás seguro de que quieres eliminar esta madera?')) {
             woodData = woodData.filter(pkg => pkg.id !== id);
             renderCards();
             saveToLocalStorage();
-        }
+        // }
     }
 
     function clearAllPackages() {
-        if (confirm('¿Estás seguro de que quieres borrar TODAS las maderas añadidas?')) {
+        // Optional: Add confirmation dialog
+        // if (confirm('¿Estás seguro de que quieres borrar TODAS las maderas añadidas?')) {
             woodData = [];
             renderCards();
             saveToLocalStorage();
             clearInputs(); // Optionally clear inputs too
-        }
+        // }
     }
 
     function clearInputs() {
-        descriptionInput.value = '';
-        priceInput.value = '';
-        pickingTextarea.value = '';
-        packageTextarea.value = '';
-        onlyPackageChk.checked = false;
-        use36PackageChk.checked = false; // Reset 36/38% checkbox too
+        if (descriptionInput) descriptionInput.value = '';
+        if (priceInput) priceInput.value = '';
+        if (pickingTextarea) pickingTextarea.value = '';
+        if (packageTextarea) packageTextarea.value = '';
+        if (onlyPackageChk) onlyPackageChk.checked = false;
+        if (use36PackageChk) use36PackageChk.checked = false; // Reset 36/38% checkbox too
     }
 
     function saveToLocalStorage() {
-        localStorage.setItem('maderaPaquetesData', JSON.stringify(woodData));
+        try {
+            localStorage.setItem('maderaPaquetesData', JSON.stringify(woodData));
+        } catch (e) {
+            console.error("Error saving Madera data to localStorage:", e);
+        }
     }
 
     function loadFromLocalStorage() {
-        const savedData = localStorage.getItem('maderaPaquetesData');
-        if (savedData) {
-            woodData = JSON.parse(savedData);
-            renderCards();
+        try {
+            const savedData = localStorage.getItem('maderaPaquetesData');
+            if (savedData) {
+                woodData = JSON.parse(savedData);
+                renderCards();
+            }
+        } catch (e) {
+            console.error("Error loading Madera data from localStorage:", e);
+            woodData = []; // Reset data if loading fails
         }
     }
 
 })(); // End of Madera Paquetes App IIFE
 
+
+/********************* NUEVA Aplicación Fabrica (IIFE) *********************/
+(function() {
+    // DOM Elements specific to Fabrica App
+    const fabricaAppContainer = document.getElementById('fabricaApp');
+
+    // --- Early Exit if Fabrica container doesn't exist ---
+    if (!fabricaAppContainer) {
+        // console.log("Fabrica container not found, skipping Fabrica app initialization.");
+        return; // Exit this IIFE
+    }
+    // --- End Early Exit ---
+
+    // Find elements *within* the fabricaAppContainer
+    const clientRadios = fabricaAppContainer.querySelectorAll('input[name="clientType"]');
+    const clientInfoDiv = fabricaAppContainer.querySelector('#clientInfo');
+    const quantityInput = fabricaAppContainer.querySelector('#quantity');
+    const descriptionInput = fabricaAppContainer.querySelector('#description');
+    const dimensionsInput = fabricaAppContainer.querySelector('#dimensions');
+    const pricePvpInput = fabricaAppContainer.querySelector('#pricePvp');
+    const addRowBtn = fabricaAppContainer.querySelector('#addRow');
+    const clearFieldsBtn = fabricaAppContainer.querySelector('#clearFields'); // ID might clash if not careful
+    const printTableBtn = fabricaAppContainer.querySelector('#printTable'); // ID might clash
+    const priceTableBody = fabricaAppContainer.querySelector('#priceTable tbody'); // ID might clash
+    const totalPriceCell = fabricaAppContainer.querySelector('#totalPrice'); // ID might clash
+
+     // --- Early Exit if essential Fabrica elements don't exist ---
+     if (!clientRadios.length || !clientInfoDiv || !quantityInput || !descriptionInput || !dimensionsInput || !pricePvpInput || !addRowBtn || !clearFieldsBtn || !printTableBtn || !priceTableBody || !totalPriceCell) {
+        console.warn("Essential Fabrica elements not found within #fabricaApp, skipping Fabrica app initialization.");
+        return; // Exit this IIFE
+    }
+    // --- End Early Exit ---
+
+
+    // Información de descuentos por tipo de cliente
+    const discounts = {
+        'B0': {
+            'low': { threshold: 250, discount: 0.28 },
+            'high': { threshold: 1500, discount: 0.38 }
+        },
+        'A3': {
+            'low': { threshold: 250, discount: 0.31 },
+            'high': { threshold: 1500, discount: 0.41 }
+        },
+        'M3': {
+            'low': { threshold: 250, discount: 0.34 },
+            'high': { threshold: 1500, discount: 0.42 }
+        }
+    };
+
+    // --- Event Listeners ---
+    clientRadios.forEach(radio => {
+        radio.addEventListener('change', updateClientInfo);
+    });
+
+    addRowBtn.addEventListener('click', function() {
+        const quantity = parseInt(quantityInput.value) || 1;
+        const description = descriptionInput.value.trim();
+        const dimensions = dimensionsInput.value.trim();
+        const pricePvp = parseFloat(pricePvpInput.value.replace(',', '.')) || 0; // Handle comma decimal
+
+        if (!description || !dimensions || pricePvp <= 0) {
+            // alert('Por favor, complete todos los campos correctamente.');
+            console.warn('Fabrica: Campos incompletos o inválidos para añadir fila.');
+            return;
+        }
+
+        // Calcular las dimensiones y el área
+        let width = 0, height = 0, area = 0;
+        const dimensionParts = dimensions.match(/(\d+)\s*[xX]\s*(\d+)/); // Regex to match "number x number"
+
+        if (dimensionParts && dimensionParts.length === 3) {
+            width = parseFloat(dimensionParts[1]);
+            height = parseFloat(dimensionParts[2]);
+            if (!isNaN(width) && !isNaN(height) && width > 0 && height > 0) {
+                 area = (width * height) / 1000000; // Convertir de mm² a m²
+            } else {
+                 console.warn('Fabrica: Dimensiones inválidas después de la extracción.');
+                 // alert('Dimensiones inválidas. Use el formato: anchura x altura (números positivos).');
+                 return;
+            }
+        } else {
+            // alert('Formato de medidas incorrecto. Use el formato: anchura x altura');
+            console.warn('Fabrica: Formato de medidas incorrecto.');
+            return;
+        }
+
+        // Calcular precios (basado en el total PVP de la línea para determinar descuento)
+        const totalPvpForDiscount = pricePvp * area * quantity;
+        const discount = getDiscount(totalPvpForDiscount); // Usa el total PVP para el umbral
+        const priceNetPerSqm = pricePvp * (1 - discount); // Precio neto por m²
+        const priceNetPerBoard = priceNetPerSqm * area; // Precio neto por tablero
+        const totalNetForRow = priceNetPerBoard * quantity; // Total neto para la cantidad
+
+        // Crear nueva fila
+        const newRow = document.createElement('tr');
+        // Store original PVP per m² and area in data attributes for recalculation
+        newRow.dataset.originalPvp = pricePvp;
+        newRow.dataset.area = area;
+
+        newRow.innerHTML = `
+            <td data-label="Cantidad">${quantity}</td>
+            <td data-label="Descripción">${description}</td>
+            <td data-label="Medidas (mm)">${dimensions}</td>
+            <td data-label="Precio Neto (€/m²)">${priceNetPerSqm.toFixed(2)} €/m²</td>
+            <td data-label="Precio Neto Tablero">${priceNetPerBoard.toFixed(2)} €</td>
+            <td data-label="Total Neto">${totalNetForRow.toFixed(2)} €</td>
+            <td class="no-print">
+                <button class="remove-btn" title="Eliminar fila">-</button> {/* Changed to button for semantics */}
+            </td>
+        `;
+
+        // Añadir funcionalidad para eliminar la fila
+        const removeBtn = newRow.querySelector('.remove-btn');
+        if (removeBtn) {
+            removeBtn.addEventListener('click', function() {
+                if (priceTableBody) { // Check if body exists
+                    priceTableBody.removeChild(newRow);
+                    updateTotal(); // Recalculate total after removing
+                    updateAllRowPrices(); // Recalculate all discounts after removing a row
+                }
+            });
+        }
+
+
+        // Añadir fila a la tabla
+        if (priceTableBody) { // Check if body exists
+            priceTableBody.appendChild(newRow);
+        }
+
+
+        // Actualizar total y recalcular descuentos de todas las filas
+        updateTotal();
+        updateAllRowPrices(); // Recalculate all discounts after adding a new row
+
+        // NO limpiar todos los campos, solo la cantidad vuelve a 1
+        quantityInput.value = '1';
+        // Opcional: Limpiar descripción, dimensiones, pvp si se desea
+        // descriptionInput.value = '';
+        // dimensionsInput.value = '';
+        // pricePvpInput.value = '';
+        descriptionInput.focus(); // Poner foco en descripción para siguiente item
+
+    });
+
+    // Limpiar campos al hacer clic en el botón correspondiente
+    clearFieldsBtn.addEventListener('click', function() {
+        clearFields();
+        // También limpiar la tabla
+        if (priceTableBody) priceTableBody.innerHTML = '';
+        updateTotal(); // Reset total a 0.00 €
+    });
+
+    // Funcionalidad para imprimir la tabla
+    printTableBtn.addEventListener('click', function() {
+        window.print();
+    });
+
+    // --- Helper Functions ---
+
+    function updateClientInfo() {
+        if (!clientInfoDiv || !clientRadios.length) return;
+        let clientType = '';
+        clientRadios.forEach(radio => {
+            if (radio.checked) {
+                clientType = radio.value;
+            }
+        });
+
+        const discountInfo = discounts[clientType];
+        if (!discountInfo) return; // Exit if discount info not found
+
+        clientInfoDiv.innerHTML = `
+            <h3>Descuentos para cliente ${clientType}:</h3>
+            <ul>
+                <li>Desde ${discountInfo.low.threshold}€ a ${discountInfo.high.threshold - 1}€: ${(discountInfo.low.discount * 100).toFixed(0)}% de descuento</li>
+                <li>A partir de ${discountInfo.high.threshold}€: ${(discountInfo.high.discount * 100).toFixed(0)}% de descuento</li>
+            </ul>
+        `;
+
+        // Recalcular precios en tabla existente al cambiar cliente
+        updateAllRowPrices();
+    }
+
+    // Función para actualizar todos los precios en las filas existentes
+    function updateAllRowPrices() {
+        if (!priceTableBody) return;
+        const rows = priceTableBody.querySelectorAll('tr');
+        const currentTotalPVP = calculateCurrentTotalPVP(); // Calcular el PVP total actual de la tabla
+
+        rows.forEach(row => {
+            // Extraer datos originales de los atributos data-*
+            const quantity = parseInt(row.cells[0].textContent);
+            const originalPvp = parseFloat(row.dataset.originalPvp);
+            const area = parseFloat(row.dataset.area);
+
+            if (isNaN(quantity) || isNaN(originalPvp) || isNaN(area) || area <= 0) {
+                console.warn("Fabrica: Datos inválidos en la fila para recalcular", row);
+                return; // Saltar esta fila si los datos son inválidos
+            }
+
+            // Recalcular con el nuevo descuento basado en el TOTAL PVP ACTUAL
+            const discount = getDiscount(currentTotalPVP); // Usar el total PVP de la tabla
+            const newPriceNetPerSqm = originalPvp * (1 - discount);
+            const newPriceNetPerBoard = newPriceNetPerSqm * area;
+            const newTotalNetForRow = newPriceNetPerBoard * quantity;
+
+            // Actualizar celdas
+            row.cells[3].textContent = `${newPriceNetPerSqm.toFixed(2)} €/m²`;
+            row.cells[4].textContent = `${newPriceNetPerBoard.toFixed(2)} €`;
+            row.cells[5].textContent = `${newTotalNetForRow.toFixed(2)} €`;
+        });
+
+        updateTotal(); // Actualizar el total neto final mostrado
+    }
+
+    // Función para calcular el PVP total actual de todas las filas
+    function calculateCurrentTotalPVP() {
+        if (!priceTableBody) return 0;
+        let totalPVP = 0;
+        const rows = priceTableBody.querySelectorAll('tr');
+        rows.forEach(row => {
+            const quantity = parseInt(row.cells[0].textContent);
+            const originalPvp = parseFloat(row.dataset.originalPvp);
+            const area = parseFloat(row.dataset.area);
+
+            if (!isNaN(quantity) && !isNaN(originalPvp) && !isNaN(area) && area > 0) {
+                totalPVP += originalPvp * area * quantity;
+            }
+        });
+        return totalPVP;
+    }
+
+
+    // Función para calcular el descuento según tipo de cliente y el TOTAL PVP de la tabla
+    function getDiscount(currentTotalPvpValue) {
+        if (!clientRadios.length) return 0;
+        let clientType = '';
+        clientRadios.forEach(radio => {
+            if (radio.checked) {
+                clientType = radio.value;
+            }
+        });
+
+        const discountInfo = discounts[clientType];
+        if (!discountInfo) return 0; // No discount if info not found
+
+        if (currentTotalPvpValue < discountInfo.low.threshold) {
+            return 0; // Sin descuento por debajo del primer umbral
+        } else if (currentTotalPvpValue < discountInfo.high.threshold) {
+            return discountInfo.low.discount; // Descuento bajo
+        } else {
+            return discountInfo.high.discount; // Descuento alto
+        }
+    }
+
+    // Función para actualizar el precio total neto mostrado en el tfoot
+    function updateTotal() {
+        if (!priceTableBody || !totalPriceCell) return;
+        let totalNet = 0;
+        const rows = priceTableBody.querySelectorAll('tr');
+
+        rows.forEach(row => {
+            const priceCell = row.cells[5].textContent; // Celda "Total Neto" de la fila
+            // Extraer solo el número, quitando " €" y convirtiendo a float
+            const price = parseFloat(priceCell.replace('€', '').trim());
+            if (!isNaN(price)) {
+                totalNet += price;
+            }
+        });
+
+        totalPriceCell.textContent = `${totalNet.toFixed(2)} €`;
+    }
+
+    // Función para limpiar los campos de entrada
+    function clearFields() {
+        if (quantityInput) quantityInput.value = '1';
+        if (descriptionInput) descriptionInput.value = '';
+        if (dimensionsInput) dimensionsInput.value = '';
+        if (pricePvpInput) pricePvpInput.value = '';
+    }
+
+    // Inicializar la información del cliente al cargar
+    updateClientInfo();
+
+})(); // End of Fabrica App IIFE
