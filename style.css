@@ -1,33 +1,40 @@
 /* =============================
-   ESTILOS COMUNES (JDE, Web, Madera)
+   ESTILOS COMUNES (JDE, Web, Madera, Fabrica)
    ============================= */
 * {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
+  box-sizing: border-box; /* Clave para que padding/border no añadan ancho extra */
+}
+html {
+    font-size: 16px; /* Base font size */
 }
 body {
   font-family: Arial, sans-serif;
   background-color: #f5f5f5;
   color: #333;
   padding: 1rem; /* Padding general del body */
+  line-height: 1.5; /* Mejor legibilidad */
 }
-/* Contenedor principal para cada app (JDE, Web, Madera) */
-/* No aplicar a Fabrica directamente aquí si tiene su propio .container */
-#jdeApp, #webApp, #maderaApp {
+
+/* Contenedor principal para CADA app */
+.container {
   max-width: 1200px;
-  margin: 0 auto;
-  display: flex; /* Usado por JDE/Web */
-  flex-direction: column; /* Usado por JDE/Web */
-  gap: 1rem; /* Usado por JDE/Web */
+  margin: 1rem auto; /* Margen superior/inferior y centrado horizontal */
+  width: 100%; /* Ocupar el ancho disponible hasta max-width */
 }
-/* Estilo para las tarjetas usadas en JDE/Web */
+
+/* Estilo para las tarjetas (usadas en selector y JDE/Web) */
 .card {
   background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 0.5rem;
-  padding: 1rem;
+  padding: 1.5rem; /* Aumentar padding un poco */
+  width: 100%; /* Asegurar que ocupa el ancho del contenedor padre */
+  margin-bottom: 1rem; /* Espacio entre cards si hay varias */
 }
+
+/* --- Estructuras Flex --- */
 .flex {
   display: flex;
   gap: 1rem;
@@ -41,196 +48,291 @@ body {
 .items-center {
   align-items: center;
 }
+
+/* --- Formularios y Controles Comunes --- */
 .form-section {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  margin-bottom: 1rem; /* Espacio debajo secciones de formulario */
 }
 textarea {
   width: 100%;
-  min-height: 5rem;
+  min-height: 6rem; /* Un poco más alta */
   border: 1px solid #ccc;
   border-radius: 0.25rem;
   padding: 0.5rem;
   resize: vertical;
+  font-family: inherit; /* Heredar fuente */
+  font-size: 0.9rem;
 }
+input[type="text"],
+input[type="number"] { /* Estilo base para inputs */
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  outline: none;
+}
+input[type="text"]:focus,
+input[type="number"]:focus,
+textarea:focus {
+  border-color: #0077ff; /* Resaltar foco */
+  box-shadow: 0 0 0 2px rgba(0, 119, 255, 0.2);
+}
+
 input[type="radio"],
 input[type="checkbox"] {
-  margin: 0;
+  margin-right: 0.25rem; /* Espacio entre control y texto */
   transform: translateY(1px);
 }
-/* Label general (JDE/Web/Madera) */
+
+/* Label general */
 label {
   font-size: 0.9rem;
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-  margin-right: 1rem;
-  margin-bottom: 0.25rem;
+  gap: 0.25rem; /* Mantenido */
+  margin-right: 1rem; /* Espacio entre labels en línea */
+  margin-bottom: 0.5rem; /* Espacio debajo de labels apiladas */
+  cursor: pointer; /* Indicar que es clickeable */
 }
-/* Botón general (JDE/Web) - Fabrica tiene los suyos */
-#jdeApp button, #webApp button {
-  padding: 0.5rem 1rem;
+
+/* Botón general (aplicado a JDE/Web por defecto, Fabrica/Madera lo sobreescriben) */
+button {
+  padding: 0.6rem 1.2rem; /* Ligeramente más grandes */
   border: none;
   border-radius: 0.25rem;
   background-color: #0077ff;
   color: #fff;
   cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
 }
-#jdeApp button:hover, #webApp button:hover {
+button:hover {
   background-color: #005dc1;
 }
-.close-btn { /* Botón de eliminar tabla JDE/Web */
-  background-color: transparent;
-  border: none;
-  color: black;
-  padding: 0;
-  margin: 0;
-  cursor: pointer;
+button:active {
+    transform: translateY(1px); /* Efecto pulsado */
 }
-/* Tabla general (JDE/Web) */
+
+/* Contenedor para checkboxes en JDE/Web */
+#jdeColumnsContainer, #webColumnsContainer {
+    border: 1px solid #eee;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-top: 1rem;
+    background-color: #fdfdfd;
+}
+
+/* Contenedor de Tablas JDE/Web (para posible scroll) */
+#jdeTablesContainer .table-wrapper,
+#webTablesContainer .table-wrapper {
+    overflow-x: auto; /* PERMITE SCROLL HORIZONTAL EN TABLAS */
+    width: 100%;
+}
+/* Tabla general (JDE/Web/Fabrica/Madera) */
 table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.9rem;
+  margin-bottom: 1rem; /* Espacio después de cada tabla */
 }
 thead {
   background-color: #f0f0f0;
 }
 th, td {
   border: 1px solid #ddd;
-  padding: 0.5rem;
+  padding: 0.6rem; /* Un poco más de padding */
   text-align: center;
+  vertical-align: middle; /* Alinear verticalmente */
 }
-tr:hover {
+th {
+    font-weight: bold; /* Asegurar negrita en cabeceras */
+    white-space: nowrap; /* Evitar que el texto de la cabecera se parta */
+}
+tr:nth-child(even) { /* Rayado ligero para tablas */
   background-color: #f9f9f9;
 }
-.printHeader { /* Cabecera de impresión JDE/Web */
-  display: none;
+tr:hover {
+  background-color: #f1f1f1; /* Resaltado hover */
+}
+
+/* Botón de cerrar tabla JDE/Web */
+.close-btn {
+  background-color: #ffdddd;
+  border: 1px solid #ffaaaa;
+  color: #d8000c;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  display: block;
+  margin-left: auto; /* Alinea a la derecha */
+  cursor: pointer;
+}
+.close-btn:hover {
+  background-color: #ffcccc;
+}
+
+/* --- Cabecera de Impresión Común (JDE/Web) --- */
+.printHeader {
+  display: none; /* Oculto por defecto */
   margin-bottom: 2rem;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 1rem;
 }
 .header-row {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  flex-wrap: wrap; /* Permitir wrap en pantallas pequeñas */
+  gap: 1rem;
 }
 .brand {
   background-color: #000;
   color: #fff;
-  font-size: 37px;
+  font-size: 2rem; /* Tamaño ajustado */
   padding: 10px 20px;
+  font-weight: bold;
 }
 .contact {
   text-align: right;
-  padding: 10px;
+  font-size: 0.9rem;
+  line-height: 1.4;
 }
-.no-print {
-  display: block; /* Default display */
+.contact strong {
+    display: block;
+    margin-bottom: 0.2rem;
 }
+
 
 /* =============================
    ESTILOS DE LA APP "MADERA PAQUETES"
    ============================= */
-#maderaApp .header { /* Header específico de Madera */
+/* Contenedor general de Madera hereda de .container */
+#maderaApp .container { /* Estilo para el contenedor *interno* si es necesario */
+    padding: 0; /* Quitar padding si el #maderaApp ya lo tiene */
+    box-shadow: none;
+    border: none;
+    background: none;
+}
+
+#maderaApp .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
+  padding: 0 0.5rem; /* Añadir padding ligero */
 }
 #maderaApp .config-section {
   background: #fff;
-  padding: 1rem;
+  padding: 1.5rem;
   border-radius: 6px;
-  margin-bottom: 1rem;
-  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border: 1px solid #eee;
 }
 #maderaApp .cards-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1rem;
+  /* Ajustar columnas para diferentes tamaños */
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
 }
 #maderaApp .cardMadera {
   background: #fff;
   border-radius: 6px;
-  padding: 1rem;
-  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  padding: 0; /* Padding se maneja dentro */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border: 1px solid #eee;
   position: relative;
+  overflow: hidden; /* Contener elementos internos */
 }
-#maderaApp .delete-btn {
+#maderaApp .cardMadera > .delete-btn { /* Estilo específico para el botón X */
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.8);
   border: 1px solid #ccc;
   color: #333;
   padding: 0.2rem 0.5rem;
   font-size: 0.8rem;
   border-radius: 4px;
   cursor: pointer;
+  z-index: 10; /* Asegurar que esté encima */
 }
-#maderaApp .delete-btn:hover {
+#maderaApp .cardMadera > .delete-btn:hover {
   background: #fee;
   border-color: #f88;
   color: #a00;
 }
-#maderaApp .card-header {
+#maderaApp .card-header { /* Cabecera dentro de la tarjeta Madera */
   display: flex;
-  align-items: flex-start;
+  align-items: stretch; /* Que ocupen toda la altura */
   justify-content: space-between;
   gap: 1rem;
   margin-bottom: 1rem;
+  background-color: #f8f8f8; /* Fondo ligero para cabecera */
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
 }
 #maderaApp .company-text {
   background: black;
   color: white;
-  font-size: 37px;
-  padding: 10px;
+  font-size: 2rem;
+  padding: 10px 15px;
   white-space: nowrap;
+  display: flex;
+  align-items: center; /* Centrar texto verticalmente */
 }
 #maderaApp .contact-info {
   font-size: 0.9rem;
-  line-height: 1.3;
+  line-height: 1.4;
   text-align: right;
+  flex-shrink: 0; /* Evitar que se encoja demasiado */
 }
-#maderaApp .disclaimers {
-  list-style: none;
-  padding: 0;
-  margin: 0.5rem 0;
-  font-size: 0.9rem;
+#maderaApp .card-body {
+    padding: 0 1.5rem 1.5rem 1.5rem; /* Padding para el cuerpo */
 }
-#maderaApp table.madera-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 0.5rem 0;
+#maderaApp .card-body h4 { /* Título de la madera */
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
 }
-#maderaApp table.madera-table th,
-#maderaApp table.madera-table td {
-  padding: 0.4rem;
-  border: 1px solid #ddd;
-  text-align: center;
-  font-size: 0.9rem;
+#maderaApp .card-body p { /* Precio base */
+    margin-bottom: 1rem;
+    font-weight: bold;
 }
-#maderaApp table.madera-table th {
-  background: #f0f0f0;
+#maderaApp .dimension-table-container { /* Contenedor para cada tabla (picking/paquete) */
+    margin-bottom: 1rem;
+    overflow-x: auto; /* SCROLL HORIZONTAL PARA TABLAS MADERA */
 }
-/* Botones propios de Madera Paquetes */
+#maderaApp .dimension-table-container h5 { /* Título de tabla (Picking/Paquete) */
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+/* Botones específicos Madera */
 #maderaApp .btn {
-  display: inline-block;
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1.2rem; /* Consistencia */
   border: 1px solid #ccc;
-  background: #fff;
+  background: #f0f0f0; /* Gris claro */
   border-radius: 4px;
   font-size: 0.9rem;
-  transition: background 0.2s;
+  transition: background 0.2s, border-color 0.2s;
   cursor: pointer;
   color: #333;
 }
 #maderaApp .btn:hover {
-  background: #f0f0f0;
+  background: #e0e0e0;
+  border-color: #bbb;
 }
 #maderaApp .btn-outline {
   border: 1px solid #666;
   background: none;
+}
+#maderaApp .btn-outline:hover {
+    background: #f5f5f5;
 }
 #maderaApp .btn-destructive {
   border: 1px solid #d00;
@@ -239,370 +341,331 @@ tr:hover {
 }
 #maderaApp .btn-destructive:hover {
     background: #fee;
+    border-color: #f88;
 }
 #maderaApp .btn-sm {
   padding: 0.2rem 0.5rem;
   font-size: 0.8rem;
 }
-/* Inputs específicos de Madera Paquetes */
-#maderaApp input[type="text"],
-#maderaApp textarea {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  outline: none;
-}
-#maderaApp input[type="text"]:focus,
-#maderaApp textarea:focus {
-  border-color: #666;
-}
+/* Inputs específicos Madera */
 #maderaApp .config-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive grid */
     gap: 1rem;
     margin-bottom: 1rem;
 }
 
-
 /* =============================
-   NUEVOS ESTILOS PARA APP "FABRICA"
-   Prefijados con #fabricaApp para evitar conflictos
+   ESTILOS PARA APP "FABRICA"
+   Prefijados con #fabricaApp
    ============================= */
-
-#fabricaApp .container { /* Contenedor específico de Fabrica */
+#fabricaApp .container { /* Contenedor interno Fabrica */
   background-color: white;
-  padding: 20px;
+  padding: 1.5rem;
   border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  /* Hereda max-width y margin del body o .container general si es necesario */
-  max-width: 1200px; /* Asegurar que tenga max-width */
-  margin: 1rem auto; /* Añadir margen si no está dentro de otro .container */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border: 1px solid #eee;
+  /* Hereda max-width y margin del .container general */
 }
-
 #fabricaApp h1 {
-    margin-bottom: 1rem; /* Espacio debajo del título */
+    margin-bottom: 1.5rem; /* Más espacio */
+    font-size: 1.5rem;
+    text-align: center;
 }
-
 #fabricaApp .client-selector {
-  margin-bottom: 20px;
+  margin-bottom: 1.5rem;
   display: flex;
   align-items: center;
+  flex-wrap: wrap; /* Wrap en pantallas pequeñas */
+  gap: 0.5rem 1rem; /* Gap vertical y horizontal */
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 5px;
 }
-
-#fabricaApp .client-selector label { /* Label dentro del selector de cliente */
-  margin-right: 10px;
+#fabricaApp .client-selector > label { /* Label "Tipo de Cliente:" */
+  margin-right: 1rem;
   font-weight: bold;
-  /* Resetear estilos de label general si es necesario */
-  margin-bottom: 0;
-  gap: 0;
+  margin-bottom: 0; /* Reset margin */
 }
-
 #fabricaApp .client-options {
   display: flex;
-  gap: 15px;
+  gap: 1.5rem; /* Más espacio entre opciones */
+  flex-wrap: wrap;
 }
-
 #fabricaApp .client-option {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 0.3rem;
 }
-/* Label dentro de client-option */
-#fabricaApp .client-option label {
-    font-weight: normal; /* Quitar negrita */
-    margin-right: 0;
+#fabricaApp .client-option label { /* Label para B0, A3, M3 */
+    font-weight: normal;
+    margin: 0; /* Reset margin */
 }
-
-
 #fabricaApp .client-info {
-  background-color: #f8f9fa;
-  padding: 10px;
+  background-color: #e9f5ff; /* Azul claro */
+  padding: 1rem;
   border-radius: 5px;
-  margin-bottom: 20px;
-  font-size: 14px;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  border: 1px solid #cce4ff;
 }
-
 #fabricaApp .client-info h3 {
   margin-top: 0;
-  margin-bottom: 0.5rem; /* Añadir espacio debajo del h3 */
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  color: #0056b3;
 }
-
 #fabricaApp .client-info ul {
   margin: 0;
   padding-left: 20px;
 }
-
 #fabricaApp .input-group {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-  flex-wrap: nowrap; /* Asegurar que no se envuelva por defecto */
+  display: grid; /* Usar Grid para mejor control */
+  grid-template-columns: 80px 1fr 1fr 120px; /* Columnas: Cantidad, Desc, Medidas, Precio */
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  align-items: end; /* Alinear items (inputs) abajo */
 }
-
 #fabricaApp .input-field {
-  flex-grow: 1;
-  display: flex; /* Para alinear label e input */
-  flex-direction: column; /* Poner label encima */
-  gap: 0.25rem; /* Espacio entre label e input */
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
-/* Label dentro de input-field */
-#fabricaApp .input-field label {
-    margin-bottom: 0; /* Quitar margen inferior */
-    margin-right: 0; /* Quitar margen derecho */
-    font-weight: normal; /* Asegurar peso normal */
+#fabricaApp .input-field label { /* Labels encima de inputs */
+    margin-bottom: 0.25rem;
+    margin-right: 0;
+    font-weight: normal;
+    font-size: 0.85rem;
+    color: #555;
 }
-
-
-#fabricaApp .input-field.quantity {
-  max-width: 80px;
-  flex-grow: 0;
-}
-
-#fabricaApp .input-field.price {
-  max-width: 120px;
-  flex-grow: 0;
-}
-
-#fabricaApp input, #fabricaApp select { /* Inputs específicos de Fabrica */
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  box-sizing: border-box;
-  font-size: 0.9rem; /* Coherencia con otros inputs */
-}
+/* Ajustes específicos de columnas grid eliminados (quantity, price) ya que grid las controla */
 
 #fabricaApp .buttons {
   display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap; /* Wrap botones */
 }
-
-/* Botones específicos de Fabrica */
-#fabricaApp button {
-  padding: 8px 16px;
-  background-color: #4CAF50; /* Verde por defecto */
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  font-size: 0.9rem; /* Coherencia */
+/* Botones específicos Fabrica */
+#fabricaApp button { /* Hereda estilo base, solo sobreescribir colores */
+    padding: 0.6rem 1.2rem; /* Consistencia */
 }
+#fabricaApp #addRow { background-color: #28a745; } /* Verde */
+#fabricaApp #addRow:hover { background-color: #218838; }
+#fabricaApp button.delete { background-color: #dc3545; } /* Rojo */
+#fabricaApp button.delete:hover { background-color: #c82333; }
+#fabricaApp button.print { background-color: #007bff; } /* Azul */
+#fabricaApp button.print:hover { background-color: #0056b3; }
 
-#fabricaApp button:hover {
-  background-color: #45a049;
+/* Contenedor tabla Fabrica para Scroll */
+#fabricaApp #tableContainer {
+    overflow-x: auto;
+    width: 100%;
 }
-
-#fabricaApp button.delete { /* Botón Borrar Todo */
-  background-color: #f44336;
-}
-
-#fabricaApp button.delete:hover {
-  background-color: #d32f2f;
-}
-
-#fabricaApp button.print { /* Botón Imprimir */
-  background-color: #2196F3;
-}
-
-#fabricaApp button.print:hover {
-  background-color: #0b7dda;
-}
-
-/* Tabla específica de Fabrica */
-#fabricaApp .price-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
-
+/* Tabla específica Fabrica */
 #fabricaApp .price-table th,
 #fabricaApp .price-table td {
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: left; /* Alineación izquierda por defecto */
-  font-size: 0.9rem; /* Coherencia */
+  padding: 0.6rem; /* Consistencia */
+  text-align: center; /* Centrar por defecto */
+  white-space: normal; /* Permitir wrap en celdas */
 }
-
-#fabricaApp .price-table th {
-  background-color: #f2f2f2;
-  font-weight: bold;
-}
-
-#fabricaApp .price-table tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-/* Centrar columnas específicas en tabla Fabrica */
-#fabricaApp .price-table th:nth-child(1), /* Cantidad Th */
-#fabricaApp .price-table td:nth-child(1), /* Cantidad Td */
-#fabricaApp .price-table th:nth-child(4), /* Precio Neto €/m² Th */
-#fabricaApp .price-table td:nth-child(4), /* Precio Neto €/m² Td */
-#fabricaApp .price-table th:nth-child(5), /* Precio Neto Tablero Th */
-#fabricaApp .price-table td:nth-child(5), /* Precio Neto Tablero Td */
-#fabricaApp .price-table th:nth-child(6), /* Total Neto Th */
-#fabricaApp .price-table td:nth-child(6), /* Total Neto Td */
-#fabricaApp .price-table tfoot td:nth-child(2) /* Celda Total Neto en tfoot */ {
-  text-align: center;
+#fabricaApp .price-table th:nth-child(2), /* Descripción Th */
+#fabricaApp .price-table td:nth-child(2) { /* Descripción Td */
+  text-align: left; /* Alinear descripción a la izquierda */
+  min-width: 150px; /* Ancho mínimo para descripción */
 }
 /* Alinear celda "Total:" a la derecha en tfoot */
 #fabricaApp .price-table tfoot td:nth-child(1) {
     text-align: right;
     font-weight: bold;
 }
-
-
-/* Botón eliminar fila específico de Fabrica */
+/* Botón eliminar fila específico Fabrica */
 #fabricaApp .remove-btn {
   background: none;
   border: none;
-  color: #f44336; /* Color rojo para indicar eliminación */
+  color: #dc3545; /* Rojo */
   cursor: pointer;
-  font-size: 16px;
-  padding: 0 5px; /* Añadir padding para facilitar clic */
+  font-size: 1.1rem;
+  padding: 0 5px;
   font-weight: bold;
+  line-height: 1; /* Ajustar línea */
 }
 #fabricaApp .remove-btn:hover {
-    color: #d32f2f;
+    color: #c82333;
 }
 
-
 /* =============================
-   ESTILOS DE IMPRESIÓN (Comunes y Específicos)
+   ESTILOS DE IMPRESIÓN
    ============================= */
 @media print {
-  .no-print {
-    display: none !important;
-  }
   body {
-    font-size: 12px !important;
-    padding: 0;
+    font-size: 10pt !important; /* Tamaño base para impresión */
+    padding: 0.5cm; /* Márgenes de página */
     background-color: #fff;
   }
-  .container { /* Estilo general para contenedores en impresión */
+  .no-print {
+    display: none !important; /* Ocultar todo lo no imprimible */
+  }
+  .container {
     max-width: none;
     box-shadow: none;
     padding: 0;
-    margin: 0 auto; /* Centrar si es necesario */
-    border: none; /* Quitar bordes de .card */
+    margin: 0;
+    border: none;
   }
+  .card {
+      border: none;
+      box-shadow: none;
+      padding: 0;
+      margin-bottom: 1cm; /* Espacio entre elementos principales */
+  }
+  a { text-decoration: none; color: #000; } /* Evitar subrayado y color azul */
 
-  /* --- Estilos de impresión JDE/Web --- */
+  /* --- Impresión JDE/Web --- */
   #jdeApp .printHeader, #webApp .printHeader {
     display: block !important;
+    margin-bottom: 1cm;
+    padding-bottom: 0.5cm;
+    border-bottom: 1px solid #999;
   }
   #jdeApp .brand, #webApp .brand {
-    font-size: 24px !important;
+    font-size: 18pt !important;
     padding: 5px 10px;
   }
    #jdeApp .contact, #webApp .contact {
     padding: 5px;
-    font-size: 10px;
+    font-size: 9pt;
   }
-  #jdeApp table, #webApp table,
-  #jdeApp tbody, #webApp tbody,
-  #jdeApp td, #webApp td {
-    font-size: 9px !important;
-    padding: 0.3rem;
+  #jdeApp table, #webApp table, #fabricaApp table, #maderaApp table {
+    font-size: 8pt !important; /* Reducir fuente tablas */
+    page-break-inside: avoid; /* Intentar no cortar tablas */
   }
-  #jdeApp table thead th, #webApp table thead th {
-    font-size: 8px !important;
-    padding: 0.3rem;
+  th, td {
+    padding: 0.15cm !important; /* Reducir padding celdas */
   }
-   #jdeApp table tbody td:nth-child(1), #jdeApp table tbody td:nth-child(2),
-   #webApp table tbody td:nth-child(1), #webApp table tbody td:nth-child(2) {
-    font-size: 8px !important;
-  }
-  #jdeApp .close-btn, #webApp .close-btn {
-    display: none !important;
-  }
-  #jdeApp button, #webApp button { /* Ocultar botones JDE/Web */
-    display: none !important;
-  }
-
-  /* --- Estilos de impresión Madera --- */
-   #maderaApp .cardMadera {
-      padding: 0.5rem;
-      box-shadow: none;
-      border: 1px solid #eee;
-      page-break-inside: avoid; /* Intentar no cortar tarjetas */
-  }
-  #maderaApp .delete-btn {
+  /* Ocultar botones específicos si no usan .no-print */
+  #jdeApp button, #webApp button, #maderaApp .btn, #fabricaApp button {
       display: none !important;
   }
-  #maderaApp .card-header {
-      margin-bottom: 0.5rem;
-      gap: 0.5rem;
-  }
-  #maderaApp .company-text {
-      font-size: 24px !important;
-      padding: 5px 10px;
-  }
-  #maderaApp .contact-info {
-      font-size: 0.8rem;
-  }
-  #maderaApp table.madera-table th,
-  #maderaApp table.madera-table td {
-      padding: 0.3rem;
-      font-size: 0.8rem;
-  }
+  /* Mostrar botón de toggle en madera si está visible? No, mejor oculto */
+  #maderaApp #toggleConfigBtn { display: none !important; }
 
-  /* --- Estilos de impresión Fabrica --- */
-  #fabricaApp .container {
-      /* Ya cubierto por el .container general de impresión */
+  /* --- Impresión Madera --- */
+   #maderaApp .cardMadera {
+      padding: 0.5cm;
+      box-shadow: none;
+      border: 1px solid #ccc;
+      page-break-inside: avoid;
+      margin-bottom: 1cm;
   }
-  #fabricaApp .price-table {
-      page-break-inside: avoid; /* Intentar no cortar la tabla */
-      font-size: 10px; /* Ajustar tamaño de fuente para impresión */
-  }
-   #fabricaApp .price-table th, #fabricaApp .price-table td {
-       padding: 4px; /* Reducir padding */
-   }
+  #maderaApp .card-header { margin-bottom: 0.5cm; }
+  #maderaApp .company-text { font-size: 18pt !important; }
+  #maderaApp .contact-info { font-size: 9pt; }
 
+  /* --- Impresión Fabrica --- */
+   #fabricaApp h1 { font-size: 14pt; margin-bottom: 0.5cm;}
+   /* Ocultar columnas no necesarias en impresión si es preciso */
+   /* #fabricaApp .price-table th:last-child, #fabricaApp .price-table td:last-child { display: none; } */
 }
 
 /* =============================
-   ESTILOS RESPONSIVE (Comunes)
+   ESTILOS RESPONSIVE (Ajustes)
    ============================= */
+@media (max-width: 992px) {
+    /* Ajustes para tablets */
+    html { font-size: 15px; }
+    .card { padding: 1.2rem; }
+    #fabricaApp .input-group {
+        /* Pasar a 2 columnas en tablet? O mantener grid? */
+        grid-template-columns: 80px 1fr 1fr 120px; /* Mantener 4 por ahora */
+    }
+}
+
 @media (max-width: 768px) {
-  .flex { /* Afecta a JDE/Web */
+  /* Ajustes para móviles */
+  html { font-size: 14px; }
+  body { padding: 0.5rem; }
+  .card { padding: 1rem; }
+
+  .flex { /* Apilar elementos flex por defecto */
     flex-direction: column;
+    align-items: stretch; /* Ocupar ancho */
+    gap: 0.8rem; /* Reducir gap */
   }
-  table, thead, tbody, th, td, tr { /* Reducir fuente en tablas pequeñas */
-    font-size: 0.8rem;
+  .flex.justify-center { /* Anular centrado horizontal cuando apilado */
+      justify-content: flex-start;
   }
-  label { /* Labels generales ocupan más ancho */
-    width: 100%;
-    margin-right: 0;
-  }
-  .header-row { /* Cabecera JDE/Web */
-      flex-direction: column;
-      align-items: center;
-  }
-  .brand { /* Cabecera JDE/Web */
-      margin-bottom: 0.5rem;
-      text-align: center;
-      font-size: 28px; /* Reducir tamaño */
-  }
-  .contact { /* Cabecera JDE/Web */
-      text-align: center;
+   .flex.items-center { /* Anular centrado vertical */
+       align-items: stretch;
+   }
+
+  /* Apilar botones en JDE/Web/Madera */
+  #jdeApp .flex > button, #webApp .flex > button,
+  #maderaApp .config-section > div > button {
+      width: 100%; /* Botones ancho completo */
   }
 
-  /* Responsive para Fabrica */
-  #fabricaApp .input-group {
-      flex-wrap: wrap; /* Permitir que los inputs se envuelvan */
+  /* Inputs ancho completo (ya lo hacen por defecto) */
+
+  label { width: 100%; margin-right: 0; } /* Labels ancho completo */
+
+  /* Cabecera JDE/Web en móvil */
+  .header-row {
+      flex-direction: column;
+      align-items: center; /* Centrar */
   }
-   #fabricaApp .input-field {
-       min-width: 150px; /* Ancho mínimo para inputs */
+  .brand { text-align: center; font-size: 1.5rem; }
+  .contact { text-align: center; font-size: 0.85rem;}
+
+  /* Checkboxes JDE/Web en móvil */
+  #jdeColumnsContainer, #webColumnsContainer {
+      padding: 0.8rem;
+  }
+   #jdeColumnsContainer label, #webColumnsContainer label {
+       width: auto; /* Permitir que se ajusten lado a lado si caben */
+       margin-right: 0.5rem; /* Pequeño espacio */
    }
-   #fabricaApp .input-field.quantity, #fabricaApp .input-field.price {
-       max-width: none; /* Quitar max-width en móvil */
-       flex-basis: 40%; /* Intentar ponerlos lado a lado si caben */
+
+  /* Grid Fabrica en móvil */
+  #fabricaApp .input-group {
+      grid-template-columns: 1fr 1fr; /* 2 Columnas */
+      gap: 0.8rem;
+  }
+  /* Reordenar items en grid móvil si es necesario con grid-column */
+  #fabricaApp .input-field.quantity { grid-column: 1 / 2; }
+  #fabricaApp .input-field.price { grid-column: 2 / 3; }
+  #fabricaApp .input-field:nth-of-type(2) { grid-column: 1 / 3; } /* Descripción ancho completo */
+  #fabricaApp .input-field:nth-of-type(3) { grid-column: 1 / 3; } /* Medidas ancho completo */
+
+  /* Botones Fabrica en móvil */
+  #fabricaApp .buttons {
+       flex-direction: column; /* Apilar */
+       gap: 0.5rem;
    }
-   #fabricaApp .buttons {
-       flex-wrap: wrap; /* Envolver botones */
+   #fabricaApp .buttons button {
+       width: 100%; /* Ancho completo */
    }
+
+   /* Tablas en móvil (ya tienen overflow-x) */
+   th, td { padding: 0.4rem; } /* Menos padding en celdas */
+   th { white-space: normal; } /* Permitir wrap en cabeceras si es necesario */
+}
+
+@media (max-width: 480px) {
+    /* Ajustes extra finos para pantallas muy pequeñas */
+    html { font-size: 13px; }
+    .brand { font-size: 1.3rem; }
+    #maderaApp .company-text { font-size: 1.5rem;}
+
+    /* Grid Fabrica en móvil pequeño (1 columna) */
+    #fabricaApp .input-group {
+        grid-template-columns: 1fr; /* 1 Columna */
+    }
+    /* Resetear grid-column */
+    #fabricaApp .input-field.quantity,
+    #fabricaApp .input-field.price,
+    #fabricaApp .input-field:nth-of-type(2),
+    #fabricaApp .input-field:nth-of-type(3) {
+        grid-column: auto;
+    }
 }
