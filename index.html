@@ -88,10 +88,12 @@
         </label>
       </div>
       <div id="jdeColumnsContainer" class="flex flex-wrap justify-center items-center" style="margin-top:1rem;">
-        </div>
+        <!-- Checkboxes se generan aquí -->
+      </div>
     </div>
     <div id="jdeTablesContainer" class="card">
-      </div>
+      <!-- Tablas se generan aquí -->
+    </div>
     <!-- Fin contenido JDE App -->
   </div>
 
@@ -157,10 +159,12 @@
         </label>
       </div>
       <div id="webColumnsContainer" class="flex flex-wrap justify-center items-center" style="margin-top:1rem;">
-        </div>
+        <!-- Checkboxes se generan aquí -->
+      </div>
     </div>
     <div id="webTablesContainer" class="card">
-      </div>
+       <!-- Tablas se generan aquí -->
+    </div>
     <!-- Fin contenido Web App -->
   </div>
 
@@ -173,7 +177,7 @@
       </div>
 
       <div class="config-section no-print" id="configSection">
-        <div style="margin-bottom: 1rem; display: flex; gap: 1.5rem; align-items: center;">
+        <div style="margin-bottom: 1rem; display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap;"> <!-- Añadido flex-wrap -->
           <div>
             <input type="checkbox" id="onlyPackageChk" />
             <label for="onlyPackageChk">Sólo Paquete</label>
@@ -190,7 +194,7 @@
           <textarea placeholder="Medidas (picking). Se usan col[2] para m³ y la última col para largo." id="pickingDimensionsTextarea" rows="4"></textarea>
           <textarea placeholder="Medidas (paquetes). Se usan col[3] para paquete, col[9] para m³, col[6] para largo." id="packageDimensionsTextarea" rows="4"></textarea>
         </div>
-        <div style="display: flex; gap: 1rem;">
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;"> <!-- Añadido flex-wrap -->
           <button class="btn" id="addBtn">Añadir Madera</button>
           <button class="btn btn-destructive" id="clearAllBtn">Borrar Todo</button>
           <button class="btn btn-outline" id="printBtn">Imprimir</button>
@@ -198,13 +202,14 @@
       </div>
 
       <div class="cards-container" id="cardsContainer">
-        </div>
+        <!-- Tarjetas se generan aquí -->
+      </div>
     </div>
     <!-- Fin contenido Madera App -->
   </div>
 
   <div id="fabricaApp" class="container" style="display:none;"> <!-- Nuevo contenedor, inicialmente oculto -->
-      <!-- El HTML interno de Fabrica va aquí (sin DOCTYPE, head, style, script) -->
+      <!-- El HTML interno de Fabrica va aquí -->
       <div class="container"> <!-- Contenedor interno de Fabrica -->
         <h1>Generador de Tabla de Precios Fabrica</h1>
 
@@ -244,19 +249,19 @@
                 <input type="text" id="dimensions" placeholder="Ej: 2000x1000">
             </div>
             <div class="input-field price">
-                <label for="pricePvp">PVP:</label>
+                <label for="pricePvp">PVP (€/m²):</label> <!-- Etiqueta aclarada -->
                 <input type="number" id="pricePvp" step="0.01" min="0" placeholder="0.00">
             </div>
         </div>
 
         <div class="buttons no-print">
             <button id="addRow">Añadir Fila</button>
-            <button id="clearFields" class="delete">Borrar Todo</button> <!-- Cuidado con ID repetido si no se encapsula JS -->
-            <button id="printTable" class="print">Imprimir</button> <!-- Cuidado con ID repetido -->
+            <button id="clearFields" class="delete">Borrar Todo</button> <!-- ID clearFields -->
+            <button id="printTable" class="print">Imprimir</button> <!-- ID printTable -->
         </div>
 
-        <div id="tableContainer">
-            <table class="price-table" id="priceTable"> <!-- Cuidado con ID repetido -->
+        <div id="tableContainer"> <!-- Contenedor de tabla para posible scroll -->
+            <table class="price-table" id="priceTable"> <!-- ID priceTable -->
                 <thead>
                     <tr>
                         <th>Cantidad</th>
@@ -272,7 +277,7 @@
                 <tfoot>
                     <tr>
                         <td colspan="5" style="text-align: right;"><strong>Total:</strong></td>
-                        <td id="totalPrice">0.00 €</td> <!-- Cuidado con ID repetido -->
+                        <td id="totalPrice">0.00 €</td> <!-- ID totalPrice -->
                         <td class="no-print"></td>
                     </tr>
                 </tfoot>
