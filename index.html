@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>App Combinada: JDE, Web y Madera Paquetes</title>
+  <title>App Combinada: JDE, Web, Madera y Fabrica</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container no-print">
     <div class="card">
       <h1>Seleccione el Modo</h1>
-      <div class="flex justify-center items-center">
-        <label>
+      <div class="flex flex-wrap justify-center items-center">
+         <label>
           <input type="radio" name="modeSelector" value="JDE" checked>
           JDE
         </label>
@@ -22,6 +22,10 @@
         <label>
           <input type="radio" name="modeSelector" value="MADERA">
           Madera Paquetes
+        </label>
+        <label> {/* Nueva opción */}
+          <input type="radio" name="modeSelector" value="FABRICA">
+          Fabrica
         </label>
       </div>
     </div>
@@ -157,7 +161,7 @@
   </div>
 
   <div id="maderaApp" class="container" style="display:none;">
-    <div class="container">
+    <div class="container"> {/* Contenedor interno de Madera */}
       <div class="header">
         <h3>Tabla de Precios de Madera</h3>
         <button class="btn btn-outline btn-sm no-print" id="toggleConfigBtn">-</button>
@@ -170,6 +174,7 @@
             <label for="onlyPackageChk">Sólo Paquete</label>
           </div>
           <div>
+             {/* Asegúrate que el ID coincide con el usado en JS ('use36PackageChk') */}
             <input type="checkbox" id="use36PackageChk" />
             <label for="use36PackageChk">Paquete 38%</label>
           </div>
@@ -192,6 +197,86 @@
     </div>
   </div>
 
-<script src="script.js" defer></script>
+  <div id="fabricaApp" class="container" style="display:none;"> {/* Nuevo contenedor, inicialmente oculto */}
+      {/* El HTML interno de Fabrica va aquí (sin DOCTYPE, head, style, script) */}
+      <div class="container"> {/* Contenedor interno de Fabrica */}
+        <h1>Generador de Tabla de Precios Fabrica</h1>
+
+        <div class="client-selector no-print">
+            <label>Tipo de Cliente:</label>
+            <div class="client-options">
+                <div class="client-option">
+                    <input type="radio" id="clientB0" name="clientType" value="B0" checked>
+                    <label for="clientB0">B0</label>
+                </div>
+                <div class="client-option">
+                    <input type="radio" id="clientA3" name="clientType" value="A3">
+                    <label for="clientA3">A3</label>
+                </div>
+                <div class="client-option">
+                    <input type="radio" id="clientM3" name="clientType" value="M3">
+                    <label for="clientM3">M3</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="client-info no-print" id="clientInfo">
+            {/* El contenido se genera dinámicamente por JS */}
+        </div>
+
+        <div class="input-group no-print">
+            <div class="input-field quantity">
+                <label for="quantity">Cantidad:</label>
+                <input type="number" id="quantity" min="1" max="999" value="1">
+            </div>
+            <div class="input-field">
+                <label for="description">Descripción:</label>
+                <input type="text" id="description" placeholder="Descripción del producto">
+            </div>
+            <div class="input-field">
+                <label for="dimensions">Medidas (mm):</label>
+                <input type="text" id="dimensions" placeholder="Ej: 2000x1000">
+            </div>
+            <div class="input-field price">
+                <label for="pricePvp">PVP:</label>
+                <input type="number" id="pricePvp" step="0.01" min="0" placeholder="0.00">
+            </div>
+        </div>
+
+        <div class="buttons no-print">
+            <button id="addRow">Añadir Fila</button>
+            <button id="clearFields" class="delete">Borrar Todo</button> {/* Cuidado con ID repetido si no se encapsula JS */}
+            <button id="printTable" class="print">Imprimir</button> {/* Cuidado con ID repetido */}
+        </div>
+
+        <div id="tableContainer">
+            <table class="price-table" id="priceTable"> {/* Cuidado con ID repetido */}
+                <thead>
+                    <tr>
+                        <th>Cantidad</th>
+                        <th>Descripción</th>
+                        <th>Medidas (mm)</th>
+                        <th>Precio Neto (€/m²)</th>
+                        <th>Precio Neto Tablero</th>
+                        <th>Total Neto</th>
+                        <th class="no-print"></th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="5" style="text-align: right;"><strong>Total:</strong></td>
+                        <td id="totalPrice">0.00 €</td> {/* Cuidado con ID repetido */}
+                        <td class="no-print"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div> {/* Fin contenedor interno Fabrica */}
+  </div> {/* Fin contenedor #fabricaApp */}
+
+
+  {/* Añadido 'defer' para asegurar que el HTML se cargue antes de ejecutar JS */}
+  <script src="script.js" defer></script>
 </body>
 </html>
