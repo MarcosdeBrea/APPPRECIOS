@@ -7,33 +7,31 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <!-- Selector Global -->
   <div class="container no-print">
     <div class="card">
       <h1>Seleccione el Modo</h1>
       <div class="flex flex-wrap justify-center items-center">
          <label>
-          <input type="radio" name="modeSelector" value="JDE" checked>
-          JDE
+          <input type="radio" name="modeSelector" value="JDE" checked> JDE
         </label>
         <label>
-          <input type="radio" name="modeSelector" value="WEB">
-          Web
+          <input type="radio" name="modeSelector" value="WEB"> Web
         </label>
         <label>
-          <input type="radio" name="modeSelector" value="MADERA">
-          Madera Paquetes
+          <input type="radio" name="modeSelector" value="MADERA"> Madera Paquetes
         </label>
-        <label> <!-- Nueva opción -->
-          <input type="radio" name="modeSelector" value="FABRICA">
-          Fabrica
+        <label>
+          <input type="radio" name="modeSelector" value="FABRICA"> Fabrica
         </label>
       </div>
     </div>
   </div>
 
-  <div id="jdeApp" class="container">
-    <!-- Contenido de JDE App -->
+  <!-- ==================== APP JDE ==================== -->
+  <div id="jdeApp" class="container" style="display: block;"> <!-- Empieza visible -->
     <div id="jdePrintHeader" class="printHeader">
+      <!-- ... Contenido cabecera JDE (sin cambios) ... -->
       <div class="header-row">
         <div class="brand">Gabarró</div>
         <div class="contact">
@@ -59,19 +57,11 @@
       <div style="text-align:right; margin-bottom:1rem;">
         <button id="jdeBtnPrint">Imprimir PDF</button>
       </div>
-      <div class="flex justify-center items-center" style="margin-bottom:0.5rem;">
-        <label>
-          <input type="radio" name="discountConfig" value="B0">
-          B0
-        </label>
-        <label>
-          <input type="radio" name="discountConfig" value="A3" checked>
-          A3
-        </label>
-        <label>
-          <input type="radio" name="discountConfig" value="M3">
-          M3
-        </label>
+      <!-- ... Resto de controles JDE (radios B0/A3/M3, textarea, botones Add/Clear, checkbox Unidad) ... -->
+       <div class="flex justify-center items-center" style="margin-bottom:0.5rem;">
+        <label><input type="radio" name="discountConfig" value="B0"> B0</label>
+        <label><input type="radio" name="discountConfig" value="A3" checked> A3</label>
+        <label><input type="radio" name="discountConfig" value="M3"> M3</label>
       </div>
       <div class="form-section">
         <label for="jdeInputData">Pega aquí los datos (JDE o WEB separados por tabuladores):</label>
@@ -82,25 +72,22 @@
         <button id="jdeBtnClearText">Borrar Texto</button>
       </div>
       <div class="flex justify-center items-center" style="margin-top:0.5rem;">
-        <label>
-          <input type="checkbox" id="jdeChkUnidad" checked>
-          Unidad (m²)
-        </label>
+        <label><input type="checkbox" id="jdeChkUnidad" checked> Unidad (m²)</label>
       </div>
       <div id="jdeColumnsContainer" class="flex flex-wrap justify-center items-center" style="margin-top:1rem;">
-        <!-- Checkboxes se generan aquí -->
+        <!-- Checkboxes columnas JDE -->
       </div>
     </div>
     <div id="jdeTablesContainer" class="card">
-      <!-- Tablas se generan aquí -->
+      <!-- Tablas JDE -->
     </div>
-    <!-- Fin contenido JDE App -->
   </div>
 
-  <div id="webApp" class="container" style="display:none;">
-    <!-- Contenido de Web App -->
-    <div id="webPrintHeader" class="printHeader">
-      <div class="header-row">
+  <!-- ==================== APP WEB ==================== -->
+  <div id="webApp" class="container" style="display: none;">
+     <div id="webPrintHeader" class="printHeader">
+       <!-- ... Contenido cabecera Web (sin cambios) ... -->
+        <div class="header-row">
         <div class="brand">Gabarró</div>
         <div class="contact">
           <p style="margin:0;">
@@ -118,176 +105,152 @@
         </p>
       </div>
       <hr>
-    </div>
-    <div class="card no-print">
-      <h1>Tabla Precios Web</h1>
-      <div style="text-align:right; margin-bottom:1rem;">
-        <button id="webBtnPrint">Imprimir PDF</button>
-      </div>
-      <div class="flex justify-center items-center" style="margin-bottom:0.5rem;">
-        <label>
-          <input type="radio" name="discountConfigWeb" value="A" checked>
-          Cliente A
-        </label>
-        <label>
-          <input type="radio" name="discountConfigWeb" value="B">
-          Cliente B
-        </label>
-        <label>
-          <input type="radio" name="discountConfigWeb" value="M">
-          Cliente M
-        </label>
-      </div>
-      <div class="flex justify-center items-center" style="margin-bottom:0.5rem;">
-        <label>
-          <input type="checkbox" id="webChkPaquete38">
-          Paquete 38%
-        </label>
-      </div>
-      <div class="form-section">
-        <label for="webInputData">Pega aquí los datos:</label>
-        <textarea id="webInputData"></textarea>
-      </div>
-      <div class="flex" style="justify-content:center; margin-top:0.5rem;">
-        <button id="webBtnAddTable">Agregar Tabla</button>
-        <button id="webBtnClearText">Borrar Texto</button>
-      </div>
-      <div class="flex justify-center items-center" style="margin-top:0.5rem;">
-        <label>
-          <input type="checkbox" id="webChkUnidad" checked>
-          Unidad (m²)
-        </label>
-      </div>
-      <div id="webColumnsContainer" class="flex flex-wrap justify-center items-center" style="margin-top:1rem;">
-        <!-- Checkboxes se generan aquí -->
-      </div>
-    </div>
-    <div id="webTablesContainer" class="card">
-       <!-- Tablas se generan aquí -->
-    </div>
-    <!-- Fin contenido Web App -->
+     </div>
+     <div class="card no-print">
+       <h1>Tabla Precios Web</h1>
+       <div style="text-align:right; margin-bottom:1rem;">
+         <button id="webBtnPrint">Imprimir PDF</button>
+       </div>
+        <!-- ... Resto de controles Web (radios A/B/M, checkbox Paquete, textarea, botones Add/Clear, checkbox Unidad) ... -->
+         <div class="flex justify-center items-center" style="margin-bottom:0.5rem;">
+            <label><input type="radio" name="discountConfigWeb" value="A" checked> Cliente A</label>
+            <label><input type="radio" name="discountConfigWeb" value="B"> Cliente B</label>
+            <label><input type="radio" name="discountConfigWeb" value="M"> Cliente M</label>
+          </div>
+          <div class="flex justify-center items-center" style="margin-bottom:0.5rem;">
+            <label><input type="checkbox" id="webChkPaquete38"> Paquete 38%</label>
+          </div>
+          <div class="form-section">
+            <label for="webInputData">Pega aquí los datos:</label>
+            <textarea id="webInputData"></textarea>
+          </div>
+          <div class="flex" style="justify-content:center; margin-top:0.5rem;">
+            <button id="webBtnAddTable">Agregar Tabla</button>
+            <button id="webBtnClearText">Borrar Texto</button>
+          </div>
+          <div class="flex justify-center items-center" style="margin-top:0.5rem;">
+            <label><input type="checkbox" id="webChkUnidad" checked> Unidad (m²)</label>
+          </div>
+        <div id="webColumnsContainer" class="flex flex-wrap justify-center items-center" style="margin-top:1rem;">
+           <!-- Checkboxes columnas Web -->
+        </div>
+     </div>
+     <div id="webTablesContainer" class="card">
+       <!-- Tablas Web -->
+     </div>
   </div>
 
-  <div id="maderaApp" class="container" style="display:none;">
-    <!-- Contenido de Madera App -->
-    <div class="container"> <!-- Contenedor interno de Madera -->
-      <div class="header">
+  <!-- ==================== APP MADERA ==================== -->
+  <div id="maderaApp" class="container" style="display: none;">
+    <!-- El contenedor interno .container aquí puede ser redundante si #maderaApp ya es .container -->
+    <div> <!-- Quitamos la clase container interna redundante -->
+      <div class="header"> <!-- Clase específica Madera -->
         <h3>Tabla de Precios de Madera</h3>
-        <button class="btn btn-outline btn-sm no-print" id="toggleConfigBtn">-</button>
+        <button class="btn btn-outline btn-sm no-print" id="maderaToggleConfigBtn">-</button> <!-- ID único -->
       </div>
-
-      <div class="config-section no-print" id="configSection">
-        <div style="margin-bottom: 1rem; display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap;"> <!-- Añadido flex-wrap -->
+      <div class="config-section no-print" id="maderaConfigSection"> <!-- ID único -->
+        <div style="margin-bottom: 1rem; display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap;">
           <div>
-            <input type="checkbox" id="onlyPackageChk" />
-            <label for="onlyPackageChk">Sólo Paquete</label>
+            <input type="checkbox" id="maderaOnlyPackageChk" /> <!-- ID único -->
+            <label for="maderaOnlyPackageChk">Sólo Paquete</label>
           </div>
           <div>
-             <!-- Asegúrate que el ID coincide con el usado en JS ('use36PackageChk') -->
-            <input type="checkbox" id="use36PackageChk" />
-            <label for="use36PackageChk">Paquete 38%</label>
+            <input type="checkbox" id="maderaUse38PackageChk" /> <!-- ID único, corregido nombre -->
+            <label for="maderaUse38PackageChk">Paquete 38%</label>
           </div>
         </div>
-        <div class="config-grid" style="display: grid; gap: 1rem; margin-bottom: 1rem;">
-          <input type="text" placeholder="Descripción de la madera" id="descriptionInput" />
-          <input type="text" placeholder="Precio Base de la madera (€ por m³)" id="priceInput" />
-          <textarea placeholder="Medidas (picking). Se usan col[2] para m³ y la última col para largo." id="pickingDimensionsTextarea" rows="4"></textarea>
-          <textarea placeholder="Medidas (paquetes). Se usan col[3] para paquete, col[9] para m³, col[6] para largo." id="packageDimensionsTextarea" rows="4"></textarea>
+        <div class="config-grid">
+          <input type="text" placeholder="Descripción de la madera" id="maderaDescriptionInput" /> <!-- ID único -->
+          <input type="text" placeholder="Precio Base de la madera (€ por m³)" id="maderaPriceInput" /> <!-- ID único -->
+          <textarea placeholder="Medidas (picking). Formato JDE: Almacén[0] M3[2] Largo[última]" id="maderaPickingDimensionsTextarea" rows="4"></textarea> <!-- ID único -->
+          <textarea placeholder="Medidas (paquetes). Formato JDE: Almacén[0] Paquete[3] Largo[6] M3[9]" id="maderaPackageDimensionsTextarea" rows="4"></textarea> <!-- ID único -->
         </div>
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap;"> <!-- Añadido flex-wrap -->
-          <button class="btn" id="addBtn">Añadir Madera</button>
-          <button class="btn btn-destructive" id="clearAllBtn">Borrar Todo</button>
-          <button class="btn btn-outline" id="printBtn">Imprimir</button>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <button class="btn" id="maderaAddBtn">Añadir Madera</button> <!-- ID único -->
+          <button class="btn btn-destructive" id="maderaClearAllBtn">Borrar Todo</button> <!-- ID único -->
+          <button class="btn btn-outline" id="maderaPrintBtn">Imprimir</button> <!-- ID único -->
         </div>
       </div>
-
-      <div class="cards-container" id="cardsContainer">
-        <!-- Tarjetas se generan aquí -->
+      <div class="cards-container" id="maderaCardsContainer"> <!-- ID único -->
+        <!-- Tarjetas Madera -->
       </div>
     </div>
-    <!-- Fin contenido Madera App -->
   </div>
 
-  <div id="fabricaApp" class="container" style="display:none;"> <!-- Nuevo contenedor, inicialmente oculto -->
-      <!-- El HTML interno de Fabrica va aquí -->
-      <div class="container"> <!-- Contenedor interno de Fabrica -->
-        <h1>Generador de Tabla de Precios Fabrica</h1>
-
+  <!-- ==================== APP FABRICA ==================== -->
+  <div id="fabricaApp" class="container" style="display: none;">
+    <div class="container"> <!-- Contenedor interno Fabrica -->
+       <h1>Generador de Tabla de Precios Fabrica</h1>
         <div class="client-selector no-print">
-            <label>Tipo de Cliente:</label>
-            <div class="client-options">
-                <div class="client-option">
-                    <input type="radio" id="clientB0" name="clientType" value="B0" checked>
-                    <label for="clientB0">B0</label>
-                </div>
-                <div class="client-option">
-                    <input type="radio" id="clientA3" name="clientType" value="A3">
-                    <label for="clientA3">A3</label>
-                </div>
-                <div class="client-option">
-                    <input type="radio" id="clientM3" name="clientType" value="M3">
-                    <label for="clientM3">M3</label>
-                </div>
-            </div>
+           <label>Tipo de Cliente:</label>
+           <div class="client-options">
+             <div class="client-option">
+               <input type="radio" id="fabricaClientB0" name="fabricaClientType" value="B0" checked> <!-- IDs/Name únicos -->
+               <label for="fabricaClientB0">B0</label>
+             </div>
+             <div class="client-option">
+               <input type="radio" id="fabricaClientA3" name="fabricaClientType" value="A3">
+               <label for="fabricaClientA3">A3</label>
+             </div>
+             <div class="client-option">
+               <input type="radio" id="fabricaClientM3" name="fabricaClientType" value="M3">
+               <label for="fabricaClientM3">M3</label>
+             </div>
+           </div>
         </div>
-
-        <div class="client-info no-print" id="clientInfo">
-            <!-- El contenido se genera dinámicamente por JS -->
+        <div class="client-info no-print" id="fabricaClientInfo"> <!-- ID único -->
+           <!-- Info descuentos -->
         </div>
-
         <div class="input-group no-print">
-            <div class="input-field quantity">
-                <label for="quantity">Cantidad:</label>
-                <input type="number" id="quantity" min="1" max="999" value="1">
-            </div>
-            <div class="input-field">
-                <label for="description">Descripción:</label>
-                <input type="text" id="description" placeholder="Descripción del producto">
-            </div>
-            <div class="input-field">
-                <label for="dimensions">Medidas (mm):</label>
-                <input type="text" id="dimensions" placeholder="Ej: 2000x1000">
-            </div>
-            <div class="input-field price">
-                <label for="pricePvp">PVP (€/m²):</label> <!-- Etiqueta aclarada -->
-                <input type="number" id="pricePvp" step="0.01" min="0" placeholder="0.00">
-            </div>
+           <div class="input-field quantity">
+             <label for="fabricaQuantity">Cantidad:</label>
+             <input type="number" id="fabricaQuantity" min="1" max="999" value="1"> <!-- ID único -->
+           </div>
+           <div class="input-field">
+             <label for="fabricaDescription">Descripción:</label>
+             <input type="text" id="fabricaDescription" placeholder="Descripción del producto"> <!-- ID único -->
+           </div>
+           <div class="input-field">
+             <label for="fabricaDimensions">Medidas (mm):</label>
+             <input type="text" id="fabricaDimensions" placeholder="Ej: 2000x1000"> <!-- ID único -->
+           </div>
+           <div class="input-field price">
+             <label for="fabricaPricePvp">PVP (€/m²):</label>
+             <input type="number" id="fabricaPricePvp" step="0.01" min="0" placeholder="0.00"> <!-- ID único -->
+           </div>
         </div>
-
         <div class="buttons no-print">
-            <button id="addRow">Añadir Fila</button>
-            <button id="clearFields" class="delete">Borrar Todo</button> <!-- ID clearFields -->
-            <button id="printTable" class="print">Imprimir</button> <!-- ID printTable -->
+           <button id="fabricaAddRowBtn">Añadir Fila</button> <!-- ID único -->
+           <button id="fabricaClearAllBtn" class="delete">Borrar Todo</button> <!-- ID único -->
+           <button id="fabricaPrintBtn" class="print">Imprimir</button> <!-- ID único -->
         </div>
-
-        <div id="tableContainer"> <!-- Contenedor de tabla para posible scroll -->
-            <table class="price-table" id="priceTable"> <!-- ID priceTable -->
-                <thead>
-                    <tr>
-                        <th>Cantidad</th>
-                        <th>Descripción</th>
-                        <th>Medidas (mm)</th>
-                        <th>Precio Neto (€/m²)</th>
-                        <th>Precio Neto Tablero</th>
-                        <th>Total Neto</th>
-                        <th class="no-print"></th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="5" style="text-align: right;"><strong>Total:</strong></td>
-                        <td id="totalPrice">0.00 €</td> <!-- ID totalPrice -->
-                        <td class="no-print"></td>
-                    </tr>
-                </tfoot>
-            </table>
+        <div id="fabricaTableContainer"> <!-- ID único -->
+           <table class="price-table" id="fabricaPriceTable"> <!-- ID único -->
+             <thead>
+                <tr>
+                   <th>Cantidad</th>
+                   <th>Descripción</th>
+                   <th>Medidas (mm)</th>
+                   <th>Precio Neto (€/m²)</th>
+                   <th>Precio Neto Tablero</th>
+                   <th>Total Neto</th>
+                   <th class="no-print"></th>
+                </tr>
+             </thead>
+             <tbody></tbody>
+             <tfoot>
+                <tr>
+                   <td colspan="5" style="text-align: right;"><strong>Total:</strong></td>
+                   <td id="fabricaTotalPrice">0.00 €</td> <!-- ID único -->
+                   <td class="no-print"></td>
+                </tr>
+             </tfoot>
+           </table>
         </div>
     </div> <!-- Fin contenedor interno Fabrica -->
   </div> <!-- Fin contenedor #fabricaApp -->
 
-
-  <!-- Añadido 'defer' para asegurar que el HTML se cargue antes de ejecutar JS -->
+  <!-- Script externo al final -->
   <script src="script.js" defer></script>
 </body>
 </html>
