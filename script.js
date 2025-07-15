@@ -47,8 +47,6 @@ document.addEventListener('DOMContentLoaded', () => { // Esperar a que el DOM es
         // State
         let columns = { precioBase: true, pedido350: true, pedidoPaquete34: true, pedidoPaquete36: true, unidadesPaquete: true, stockSantiago: true, stockCentral: true, medidas: true };
         const columnLabelsDefault = { precioBase: "Precio Base", unidadesPaquete: "Unidades Paquete", stockSantiago: "Stock Santiago", stockCentral: "Stock Central", medidas: "Medidas" };
-        let columns = { precioBase: true, pedido350: true, pedidoPickingMun: true, pedidoPaquete34: true, pedidoPaquete36: true, unidadesPaquete: true, stockSantiago: true, stockCentral: true, medidas: true };
-        const columnLabelsDefault = { precioBase: "Precio Base", pedidoPickingMun: "Pedido Picking MUN", unidadesPaquete: "Unidades Paquete", stockSantiago: "Stock Santiago", stockCentral: "Stock Central", medidas: "Medidas" };
         let discountConfig = "A3";
         let tablesData = [];
 
@@ -74,7 +72,8 @@ document.addEventListener('DOMContentLoaded', () => { // Esperar a que el DOM es
         // Event Listeners
         discountRadios.forEach(radio => {
             radio.addEventListener("change", (e) => {
-@@ -77,61 +77,63 @@ document.addEventListener('DOMContentLoaded', () => { // Esperar a que el DOM es
+                discountConfig = e.target.value;
+                renderColumnsCheckboxes();
                 renderTables();
             });
             if (radio.checked) discountConfig = radio.value; // Set initial value
@@ -100,7 +99,6 @@ document.addEventListener('DOMContentLoaded', () => { // Esperar a que el DOM es
         // --- Helper Functions ---
         function getColumnLabel(key) {
             if (key === "pedido350") return "Pedido Picking";
-            if (key === "pedidoPickingMun") return "Pedido Picking MUN";
             if (key === "pedidoPaquete34") return "Pedido Paquete";
             if (key === "pedidoPaquete36") {
                 if (discountConfig === "B0") return "Pedido Paquete 35%";
@@ -112,7 +110,6 @@ document.addEventListener('DOMContentLoaded', () => { // Esperar a que el DOM es
         function renderColumnsCheckboxes() {
             jdeColumnsContainer.innerHTML = "";
             for (let colKey in columns) {
-                if (colKey === 'pedidoPickingMun' && discountConfig !== 'A3') continue;
                 const label = document.createElement("label");
                 const checkbox = document.createElement("input");
                 checkbox.type = "checkbox";
@@ -138,7 +135,41 @@ document.addEventListener('DOMContentLoaded', () => { // Esperar a que el DOM es
                 return [];
             }
         }
-@@ -173,146 +175,155 @@ document.addEventListener('DOMContentLoaded', () => { // Esperar a que el DOM es
+
+        function parseDataJDE(input) {
+            let rows = [];
+            const lines = input.split("\n");
+            const cantoRows = [];
+            const mainRows = [];
+            lines.forEach(line => {
+                const trimmed = line.trim();
+                if (!trimmed) return;
+                const parts = trimmed.split("\t");
+                // Ajustar validación si la estructura de columnas es fija
+                if (parts.length < 15) {
+                     console.warn("Skipping JDE line due to insufficient columns:", line);
+                     return;
+                };
+
+                const descripcion = parts[3] ? parts[3].trim() : '';
+                const medidas = parts[4] ? parts[4].trim() : '';
+                const largo = parseNumber(parts[5]);
+                const ancho = parseNumber(parts[6]);
+                const alto = parseNumber(parts[7]); // Grosor, usado para ordenar
+                const pvpNum = parseNumber(parts[8]);
+                const stockSantiagoNum = parseNumber(parts[9]);
+                const stockCentralNum = parseNumber(parts[10]);
+                // Columna 14 (índice 13) es a veces 'Precio Paquete' - ignoramos aquí
+                // Columna 15 (índice 14) es 'Unidades Paquete' (0 o 1 si no aplica)
+                const unidadesPaqueteVal = (parts[14] && parts[14].trim() !== "1" && parts[14].trim() !== "0") ? parts[14].trim() : "";
+
+                let stockSantiago = "";
+                let stockCentral = "";
+
+                // Calcular stock en piezas si es tablero (largo != 1000)
+                if (largo !== 1000 && largo > 0 && ancho > 0) {
+                    const area = calculateArea(largo, ancho);
+                    if (area > 0) {
                         if (stockSantiagoNum > 0) stockSantiago = Math.floor(stockSantiagoNum / area).toString();
                         if (stockCentralNum > 0) stockCentral = Math.floor(stockCentralNum / area).toString();
                     }
@@ -164,7 +195,6 @@ document.addEventListener('DOMContentLoaded', () => { // Esperar a que el DOM es
 
         function calculateDiscounts(precioBase) {
             let pedidoPicking, pedidoPaquete, pedidoPaqueteFinal;
-            let pedidoPickingMun; // Sólo para A3
             const formatCurrency = (value) => `${value.toFixed(2)} €`;
 
             switch (discountConfig) {
@@ -175,28 +205,20 @@ document.addEventListener('DOMContentLoaded', () => { // Esperar a que el DOM es
                     break;
                 case "M3":
                     pedidoPicking = formatCurrency(precioBase * (1 - 0.33)); // Era 0.33, no 0.34 en original? Revisar
-                    pedidoPicking = formatCurrency(precioBase * (1 - 0.33));
                     pedidoPaquete = formatCurrency(precioBase * (1 - 0.37));
                     pedidoPaqueteFinal = formatCurrency(precioBase * (1 - 0.38));
                     break;
                 default: // A3
                     pedidoPicking = formatCurrency(precioBase * (1 - 0.31));
-                    pedidoPickingMun = formatCurrency(precioBase * (1 - 0.33));
                     pedidoPaquete = formatCurrency(precioBase * (1 - 0.36));
                     pedidoPaqueteFinal = formatCurrency(precioBase * (1 - 0.38));
                     break;
             }
             return {
-
-            const discounts = {
                 pedido350: pedidoPicking,
                 pedidoPaquete34: pedidoPaquete,
                 pedidoPaquete36: pedidoPaqueteFinal
             };
-            if (discountConfig === "A3") {
-                discounts.pedidoPickingMun = pedidoPickingMun;
-            }
-            return discounts;
         }
 
         function renderTables() {
@@ -241,7 +263,6 @@ document.addEventListener('DOMContentLoaded', () => { // Esperar a que el DOM es
             if (columns.medidas) theadHTML += `<th>${getColumnLabel("medidas")}</th>`;
             if (columns.precioBase) theadHTML += `<th>${getColumnLabel("precioBase")}</th>`;
             if (columns.pedido350) theadHTML += `<th>${getColumnLabel("pedido350")}</th>`;
-            if (columns.pedidoPickingMun && discountConfig === 'A3') theadHTML += `<th>${getColumnLabel("pedidoPickingMun")}</th>`;
             if (columns.pedidoPaquete34) theadHTML += `<th>${getColumnLabel("pedidoPaquete34")}</th>`;
             if (columns.pedidoPaquete36) theadHTML += `<th>${getColumnLabel("pedidoPaquete36")}</th>`;
             if (columns.unidadesPaquete) theadHTML += `<th>${getColumnLabel("unidadesPaquete")}</th>`;
@@ -270,7 +291,6 @@ document.addEventListener('DOMContentLoaded', () => { // Esperar a que el DOM es
                 if (columns.medidas) tbodyHTML += `<td>${row.medidas}</td>`;
                 if (columns.precioBase) tbodyHTML += `<td>${basePriceForCalc.toFixed(2)} €</td>`;
                 if (columns.pedido350) tbodyHTML += `<td>${discounts.pedido350}</td>`;
-                if (columns.pedidoPickingMun && discountConfig === 'A3') tbodyHTML += `<td>${discounts.pedidoPickingMun}</td>`;
                 if (columns.pedidoPaquete34) tbodyHTML += `<td>${discounts.pedidoPaquete34}</td>`;
                 if (columns.pedidoPaquete36) tbodyHTML += `<td>${discounts.pedidoPaquete36}</td>`;
                 if (columns.unidadesPaquete) tbodyHTML += `<td>${row.unidadesPaquete}</td>`;
