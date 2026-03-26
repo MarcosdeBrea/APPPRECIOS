@@ -249,14 +249,17 @@
     .drag-icon { font-size: 18px; padding: 10px 0; touch-action: none; display: block; text-align: center;}
 
     @media (min-width: 768px) {
-      body { padding: 30px; background: #ddd; }
-      .paper-container { max-width: 800px; margin: 0 auto; padding: 40px; }
+      body { padding: 20px; background: #ddd; }
+      /* MODIFICACIÓN AQUÍ: Se eliminó el max-width: 800px para que ocupe todo el ancho */
+      .paper-container { width: 100%; max-width: 100%; margin: 0 auto; padding: 40px; }
       .desktop-only { display: table-cell; }
       .mobile-only { display: none; }
       .smart-table th, .smart-table td { padding: 12px 8px; }
       .col-handle { width: 30px; }
       .col-cant { width: 50px; }
       .col-price, .col-total { width: 100px; }
+      .col-dims { width: 140px; }
+      .col-neto { width: 90px; }
     }
 
     @media print {
@@ -349,8 +352,8 @@
           <th class="col-cant">Ud</th>
           <th class="col-desc">Descripción</th>
           
-          <th class="desktop-only">Medidas</th>
-          <th class="desktop-only" style="text-align:right">Neto m²</th>
+          <th class="desktop-only col-dims">Medidas</th>
+          <th class="desktop-only col-neto" style="text-align:right">Neto m²</th>
           
           <th class="col-price">Precio UD</th>
           <th class="col-total">Total</th>
@@ -463,8 +466,8 @@
             <span class="cell-main">${item.desc}</span>
             <span class="cell-sub mobile-only">${item.dims}</span>
           </td>
-          <td class="desktop-only">${item.dims}</td>
-          <td class="desktop-only" style="text-align:right">${netM2.toFixed(2)} €</td>
+          <td class="desktop-only col-dims">${item.dims}</td>
+          <td class="desktop-only col-neto" style="text-align:right">${netM2.toFixed(2)} €</td>
           <td class="col-price">
             <span class="cell-main">${netUnit.toFixed(2)} €</span>
             <span class="price-sub mobile-only">${netM2.toFixed(2)} €/m²</span>
@@ -594,5 +597,3 @@
   </script>
 </body>
 </html>
-
-
