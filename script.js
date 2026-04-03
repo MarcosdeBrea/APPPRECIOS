@@ -45,8 +45,8 @@ document.addEventListener('DOMContentLoaded', () => { // Esperar a que el DOM es
     /********************* Aplicación JDE (IIFE) *********************/
     (function() {
         // State
-        let columns = { precioBase: true, pedido350: true, pedidoPaquete34: true, pedidoPaquete36: true, unidadesPaquete: true, stockSantiago: true, stockCentral: true, medidas: true };
-        const columnLabelsDefault = { precioBase: "Precio Base", unidadesPaquete: "Unidades Paquete", stockSantiago: "Stock Santiago", stockCentral: "Stock Central", medidas: "Medidas" };
+        let columns = { precioBase: true, pedido350: true, pedidoPickingMun: true, pedidoPaquete34: true, pedidoPaquete36: true, unidadesPaquete: true, stockSantiago: true, stockCentral: true, medidas: true };
+        const columnLabelsDefault = { precioBase: "Precio Base", pedidoPickingMun: "Pedido Picking MUN", unidadesPaquete: "Unidades Paquete", stockSantiago: "Stock Santiago", stockCentral: "Stock Central", medidas: "Medidas" };
         let discountConfig = "A3";
         let tablesData = [];
 
@@ -99,6 +99,7 @@ document.addEventListener('DOMContentLoaded', () => { // Esperar a que el DOM es
         // --- Helper Functions ---
         function getColumnLabel(key) {
             if (key === "pedido350") return "Pedido Picking";
+            if (key === "pedidoPickingMun") return "Pedido Picking MUN";
             if (key === "pedidoPaquete34") return "Pedido Paquete";
             if (key === "pedidoPaquete36") {
                 if (discountConfig === "B0") return "Pedido Paquete 35%";
@@ -110,6 +111,7 @@ document.addEventListener('DOMContentLoaded', () => { // Esperar a que el DOM es
         function renderColumnsCheckboxes() {
             jdeColumnsContainer.innerHTML = "";
             for (let colKey in columns) {
+                if (colKey === 'pedidoPickingMun' && discountConfig !== 'A3') continue;
                 const label = document.createElement("label");
                 const checkbox = document.createElement("input");
                 checkbox.type = "checkbox";
@@ -195,6 +197,7 @@ document.addEventListener('DOMContentLoaded', () => { // Esperar a que el DOM es
 
         function calculateDiscounts(precioBase) {
             let pedidoPicking, pedidoPaquete, pedidoPaqueteFinal;
+            let pedidoPickingMun; // Sólo para A3
             const formatCurrency = (value) => `${value.toFixed(2)} €`;
 
             switch (discountConfig) {
@@ -204,21 +207,27 @@ document.addEventListener('DOMContentLoaded', () => { // Esperar a que el DOM es
                     pedidoPaqueteFinal = formatCurrency(precioBase * (1 - 0.35));
                     break;
                 case "M3":
-                    pedidoPicking = formatCurrency(precioBase * (1 - 0.33)); // Era 0.33, no 0.34 en original? Revisar
+                    pedidoPicking = formatCurrency(precioBase * (1 - 0.33));
                     pedidoPaquete = formatCurrency(precioBase * (1 - 0.37));
                     pedidoPaqueteFinal = formatCurrency(precioBase * (1 - 0.38));
                     break;
                 default: // A3
                     pedidoPicking = formatCurrency(precioBase * (1 - 0.31));
+                    pedidoPickingMun = formatCurrency(precioBase * (1 - 0.33));
                     pedidoPaquete = formatCurrency(precioBase * (1 - 0.36));
                     pedidoPaqueteFinal = formatCurrency(precioBase * (1 - 0.38));
                     break;
             }
-            return {
+
+            const discounts = {
                 pedido350: pedidoPicking,
                 pedidoPaquete34: pedidoPaquete,
                 pedidoPaquete36: pedidoPaqueteFinal
             };
+            if (discountConfig === "A3") {
+                discounts.pedidoPickingMun = pedidoPickingMun;
+            }
+            return discounts;
         }
 
         function renderTables() {
@@ -263,6 +272,7 @@ document.addEventListener('DOMContentLoaded', () => { // Esperar a que el DOM es
             if (columns.medidas) theadHTML += `<th>${getColumnLabel("medidas")}</th>`;
             if (columns.precioBase) theadHTML += `<th>${getColumnLabel("precioBase")}</th>`;
             if (columns.pedido350) theadHTML += `<th>${getColumnLabel("pedido350")}</th>`;
+            if (columns.pedidoPickingMun && discountConfig === 'A3') theadHTML += `<th>${getColumnLabel("pedidoPickingMun")}</th>`;
             if (columns.pedidoPaquete34) theadHTML += `<th>${getColumnLabel("pedidoPaquete34")}</th>`;
             if (columns.pedidoPaquete36) theadHTML += `<th>${getColumnLabel("pedidoPaquete36")}</th>`;
             if (columns.unidadesPaquete) theadHTML += `<th>${getColumnLabel("unidadesPaquete")}</th>`;
@@ -291,6 +301,7 @@ document.addEventListener('DOMContentLoaded', () => { // Esperar a que el DOM es
                 if (columns.medidas) tbodyHTML += `<td>${row.medidas}</td>`;
                 if (columns.precioBase) tbodyHTML += `<td>${basePriceForCalc.toFixed(2)} €</td>`;
                 if (columns.pedido350) tbodyHTML += `<td>${discounts.pedido350}</td>`;
+                if (columns.pedidoPickingMun && discountConfig === 'A3') tbodyHTML += `<td>${discounts.pedidoPickingMun}</td>`;
                 if (columns.pedidoPaquete34) tbodyHTML += `<td>${discounts.pedidoPaquete34}</td>`;
                 if (columns.pedidoPaquete36) tbodyHTML += `<td>${discounts.pedidoPaquete36}</td>`;
                 if (columns.unidadesPaquete) tbodyHTML += `<td>${row.unidadesPaquete}</td>`;
